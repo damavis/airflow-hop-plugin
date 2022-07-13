@@ -1,0 +1,10 @@
+services:
+  apache-hop:
+    image: apache/hop:latest
+    ports:
+      - 8081:8081
+    environment:
+      HOP_SERVER_USER: cluster
+      HOP_SERVER_PASS: cluster
+      HOP_SERVER_PORT: 8081
+      HOP_SERVER_HOSTNAME: 0.0.0.0 #Placeholder for testing
