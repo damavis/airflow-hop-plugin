@@ -12,7 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+import json
 
 from airflow import settings
 from airflow.models import Connection
@@ -29,6 +29,7 @@ class OperatorTestBase(TestBase):
     def setUpClass(cls):
         super().setUpClass()
         conn = Connection(conn_id='hop_default')
+        extra = json.dumps({'config_path': f'{cls.TESTS_PATH}/resources/config'})
 
         session = settings.Session()
 
@@ -40,7 +41,8 @@ class OperatorTestBase(TestBase):
                     host='localhost',
                     port=8081,
                     login='cluster',
-                    password='cluster'
+                    password='cluster',
+                    extra=extra,
                 )
                 session.add(conn)
                 session.commit()
