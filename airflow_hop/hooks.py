@@ -14,40 +14,139 @@
 # limitations under the License.
 from typing import Any
 
+import requests
 from airflow.hooks.base import BaseHook
-
+from requests.auth import HTTPBasicAuth
+from xml_builder.xml_builder import XMLBuilder
 
 class HopHook(BaseHook):
+    """
+    Implementation hook to interact with Hop REST API
+    """
 
-    class HopServerConnection:  # TODO: Implement me
+    class HopServerConnection:
+        """
+        Implements a Hop Server connection
+        """
 
-        def register_pipeline(self):
-            pass
+        PREPARE_PIPELINE_EXEC = '/hop/prepareExec/'
+        START_PIPELINE_EXEC = '/hop/startExec/'
+        STOP_PIPELINE_EXEC = '/hop/stopExec/'
+        REGISTER_PIPELINE = '/hop/registerPipeline/'
+        PIPELINE_STATUS = '/hop/pipelineStatus/'
+
+        REGISTER_WORKFLOW = '/hop/registerWorkflow/'
+        WORKFLOW_STATUS = '/hop/workflowStatus/'
+        START_WORKFLOW = '/hop/startWorkflow/'
+        STOP_WORKFLOW = '/hop/stopWorkflow/'
+
+
+        def __init__(
+                self,
+                host,
+                port,
+                username,
+                password,
+                log_level,
+                metastore_file,
+                config_file):
+            self.host = host
+            self.port = port
+            self.username = username
+            self.password = password
+            self.log_level = log_level
+            self.metastore_file = metastore_file
+            self.config_file = config_file
+
+        def register_pipeline(self, pipe_file):
+            xml_builder = XMLBuilder(self.metastore_file, self.config_file)
+            data = xml_builder.get_pipeline_xml(pipe_file)
+            parameters = {'xml':'Y'}
+            response = requests.post(self.REGISTER_PIPELINE,
+                                    params=parameters,auth=self.__get_auth, data=data)
+            print(response.status_code)
+
+        def pipeline_status(self, pipe_name, pipe_id):
+            parameters = {'name':pipe_name, 'id':pipe_id,'xml':'Y'}
+            response = requests.get(self.__get_url(self.PIPELINE_STATUS),
+                                    params=parameters, auth=self.__get_auth)
+            print(response.status_code)
+
+        def prepare_pipeline_exec(self, pipe_name, pipe_id):
+            parameters = {'name':pipe_name, 'id':pipe_id,'xml':'Y'}
+            response = requests.get(self.__get_url(self.PREPARE_PIPELINE_EXEC),
+                                    params=parameters, auth=self.__get_auth)
+            print(response.status_code)
+
+        def start_pipeline_execution(self, pipe_name, pipe_id):
+            parameters = {'name':pipe_name, 'id':pipe_id,'xml':'Y'}
+            response = requests.get(self.__get_url(self.START_PIPELINE_EXEC),
+                                    params=parameters, auth=self.__get_auth)
+            print(response.status_code)
+
+        def stop_pipeline_execution(self, pipe_name, pipe_id):
+            parameters = {'name':pipe_name, 'id':pipe_id,'xml':'Y'}
+            response = requests.get(self.__get_url(self.STOP_PIPELINE_EXEC),
+                                    params=parameters, auth=self.__get_auth)
+            print(response.status_code)
+
 
         def register_workflow(self):
+            #TODO: Create XML and execute petition
             pass
 
-        def pipeline_status(self):
-            pass
+        def workflow_status(self, workflow_name, workflow_id):
+            parameters = {'name':workflow_name, 'id':workflow_id,'xml':'Y'}
+            response = requests.get(self.__get_url(self.WORKFLOW_STATUS),
+                                    params=parameters, auth=self.__get_auth)
+            print(response.status_code)
 
-        def workflow_status(self):
-            pass
+        def start_workflow(self, workflow_name, workflow_id):
+            parameters = {'name':workflow_name, 'id':workflow_id,'xml':'Y'}
+            response = requests.get(self.__get_url(self.START_WORKFLOW),
+                                    params=parameters, auth=self.__get_auth)
+            print(response.status_code)
 
-        def prepare_exec(self):
-            pass
+        def stop_workflow(self, workflow_name, workflow_id):
+            parameters = {'name':workflow_name, 'id':workflow_id,'xml':'Y'}
+            response = requests.get(self.__get_url(self.STOP_WORKFLOW),
+                                    params=parameters, auth=self.__get_auth)
+            print(response.status_code)
 
-        def start_execution(self):
-            pass
 
-        def stop_execution(self):
-            pass
+        def __get_url(self,endpoint):
+            return f'https://{self.host}:{self.port}{endpoint}'
 
-    def __init__(self, source, conn_id='hop_default'):
+        def __get_auth(self):
+            return HTTPBasicAuth(self.username,self.password)
+
+    def __init__(
+            self,
+            source,
+            metastore_file,
+            config_file,
+            conn_id='hop_default',
+            log_level = 'Basic'):
         super().__init__(source)
         self.conn_id = conn_id
         self.connection = self.get_connection(conn_id)
         self.extras = self.connection.extra_dejson
-        self.pentaho_cli = None
+        self.log_level = log_level
+        self.metastore_file = metastore_file
+        self.config_file = config_file
+        self.hop_client = None
 
     def get_conn(self) -> Any:
-        raise NotImplementedError()  # TODO: Implement me
+        if self.hop_client:
+            return self.hop_client
+
+        self.hop_client = self.HopServerConnection(
+            host = self.connection.host,
+            port = self.connection.port,
+            username = self.connection.username,
+            password = self.connection.password,
+            log_level = self.log_level,
+            metastore_file = self.metastore_file,
+            config_file = self.config_file
+            )
+        return self.hop_client
