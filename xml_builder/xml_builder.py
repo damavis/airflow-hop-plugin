@@ -28,7 +28,25 @@ class XMLBuilder:
         self.hop_config = hop_config
 
     def get_workflow_xml(self, filename) -> str:
-        pass
+        root = Element('workflow_configuration')
+        workflow = ElementTree.parse(filename)
+        root.append(workflow.getroot())
+        root.append(self.__get_workflow_execuion_config())
+        root.append(self.__generate_element('metastore_json'), self.__generate_metastore)
+        return ElementTree.tostring(root, encoding='unicode')
+
+    def __get_workflow_execuion_config(self) -> Element:
+        root = Element('workflow_execution_configuration')
+        root.append(self.__generate_element('parameters'))      # TODO: Implement parameters
+        root.append(self.__get_variables())
+        root.append(self.__generate_element('log_level','Basic'))
+        root.append(self.__generate_element('clear_log','Y'))
+        root.append(self.__generate_element('start_copy_name'))
+        root.append(self.__generate_element('gather_metrics','Y'))
+        root.append(self.__generate_element('expand_remote_workflow','N'))
+        root.append(self.__generate_element('run_configuration','local'))
+        return root
+
 
     def get_pipeline_xml(self, filename) -> str:
         root = Element('pipeline_configuration')
@@ -42,7 +60,7 @@ class XMLBuilder:
         root = Element('pipeline_execution_configuration')
         root.append(self.__generate_element('pass_export','N'))
         root.append(self.__generate_element('parameters'))      # TODO: Implement parameters
-        root.append(self.__get_pipeline_variables())
+        root.append(self.__get_variables())
         root.append(self.__generate_element('log_level','Basic'))
         root.append(self.__generate_element('log_filename'))
         root.append(self.__generate_element('log_file_append','N'))
@@ -52,7 +70,7 @@ class XMLBuilder:
         root.append(self.__generate_element('run_configuration','local'))
         return root
 
-    def __get_pipeline_variables(self) -> Element:
+    def __get_variables(self) -> Element:
         with open(self.hop_config, encoding='utf-8') as f:
             data = json.load(f)
         variables = data['variables']

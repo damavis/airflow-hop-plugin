@@ -134,8 +134,20 @@ class HopHook(BaseHook):
                 return xmltodict.parse(response.content)
 
 
-        def register_workflow(self):
-            #TODO: Create XML and execute petition
+        def register_workflow(self, workflow_file):
+            xml_builder = XMLBuilder(self.metastore_file, self.config_file)
+            data = xml_builder.get_pipeline_xml(workflow_file)
+            parameters = {'xml':'Y'}
+            response = requests.post(self.REGISTER_WORKFLOW,
+                                    params=parameters,auth=self.__get_auth, data=data)
+            if response.status_code >= 400:
+                result = xmltodict(response.content)
+                raise AirflowException('{}: {}'.format(
+                    result['webresult']['result'],
+                    result['webresult']['message'])
+                )
+            else:
+                return xmltodict.parse(response.content)
             pass
 
         def workflow_status(self, workflow_name, workflow_id):
@@ -151,8 +163,8 @@ class HopHook(BaseHook):
             else:
                 return xmltodict.parse(response.content)
 
-        def start_workflow(self, workflow_name, workflow_id):
-            parameters = {'name':workflow_name, 'id':workflow_id,'xml':'Y'}
+        def start_workflow(self, workflow_name):
+            parameters = {'name':workflow_name, 'xml':'Y'}
             response = requests.get(self.__get_url(self.START_WORKFLOW),
                                     params=parameters, auth=self.__get_auth)
             if response.status_code >= 400:
