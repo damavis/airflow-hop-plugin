@@ -15,7 +15,35 @@
 
 from unittest import TestCase
 
-class TestHopHook(TestCase):
+from airflow_hop.hooks import HopHook
 
-    def test_dummy(self):
-        pass
+DEFAULT_HOST = 'localhost'
+DEFAULT_PORT = 8081
+DEFAULT_USERNAME = 'cluster'
+DEFAULT_PASSWORD = 'cluster'
+DEFAULT_LOG_LEVEL = 'Basic'
+DEFAULT_HOP_CONFIGURATION = 'hop-config.json'
+DEFAULT_METASTORE_FILE = 'metadata.json'
+DEFAULT_PIPELINE = 'abort-basic.hpl'
+
+class TestHopHook(TestCase):
+    """
+    Perform tests regarding Hooks
+    """
+
+    def test_client_constructor(self):
+        client = HopHook.HopServerConnection(
+                                    DEFAULT_HOST,
+                                    DEFAULT_PORT,
+                                    DEFAULT_USERNAME,
+                                    DEFAULT_PASSWORD,
+                                    DEFAULT_LOG_LEVEL,
+                                    DEFAULT_METASTORE_FILE,
+                                    DEFAULT_HOP_CONFIGURATION)
+        self.assertEqual(client.host, DEFAULT_HOST)
+        self.assertEqual(client.port, DEFAULT_PORT)
+        self.assertEqual(client.username, DEFAULT_USERNAME)
+        self.assertEqual(client.password, DEFAULT_PASSWORD)
+        self.assertEqual(client.log_level, DEFAULT_LOG_LEVEL)
+        self.assertEqual(client.metastore_file, DEFAULT_METASTORE_FILE)
+        self.assertEqual(client.config_file, DEFAULT_HOP_CONFIGURATION)
