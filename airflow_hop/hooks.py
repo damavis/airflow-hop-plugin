@@ -13,9 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from typing import Any
+from airflow.exceptions import AirflowException
+from airflow.hooks.base import BaseHook
 
 import requests
-from airflow.hooks.base import BaseHook
+import xmltodict
 from requests.auth import HTTPBasicAuth
 from xml_builder.xml_builder import XMLBuilder
 
@@ -58,37 +60,78 @@ class HopHook(BaseHook):
             self.metastore_file = metastore_file
             self.config_file = config_file
 
+        def __get_url(self,endpoint):
+            return f'https://{self.host}:{self.port}{endpoint}'
+
+        def __get_auth(self):
+            return HTTPBasicAuth(self.username,self.password)
+
         def register_pipeline(self, pipe_file):
             xml_builder = XMLBuilder(self.metastore_file, self.config_file)
             data = xml_builder.get_pipeline_xml(pipe_file)
             parameters = {'xml':'Y'}
             response = requests.post(self.REGISTER_PIPELINE,
                                     params=parameters,auth=self.__get_auth, data=data)
-            print(response.status_code)
+            if response.status_code >= 400:
+                result = xmltodict(response.content)
+                raise AirflowException('{}: {}'.format(
+                    result['webresult']['result'],
+                    result['webresult']['message'])
+                )
+            else:
+                return xmltodict.parse(response.content)
 
         def pipeline_status(self, pipe_name, pipe_id):
             parameters = {'name':pipe_name, 'id':pipe_id,'xml':'Y'}
             response = requests.get(self.__get_url(self.PIPELINE_STATUS),
                                     params=parameters, auth=self.__get_auth)
-            print(response.status_code)
+            if response.status_code >= 400:
+                result = xmltodict(response.content)
+                raise AirflowException('{}: {}'.format(
+                    result['webresult']['result'],
+                    result['webresult']['message'])
+                )
+            else:
+                return xmltodict.parse(response.content)
 
         def prepare_pipeline_exec(self, pipe_name, pipe_id):
             parameters = {'name':pipe_name, 'id':pipe_id,'xml':'Y'}
             response = requests.get(self.__get_url(self.PREPARE_PIPELINE_EXEC),
                                     params=parameters, auth=self.__get_auth)
-            print(response.status_code)
+            if response.status_code >= 400:
+                result = xmltodict(response.content)
+                raise AirflowException('{}: {}'.format(
+                    result['webresult']['result'],
+                    result['webresult']['message'])
+                )
+            else:
+                return xmltodict.parse(response.content)
 
         def start_pipeline_execution(self, pipe_name, pipe_id):
             parameters = {'name':pipe_name, 'id':pipe_id,'xml':'Y'}
             response = requests.get(self.__get_url(self.START_PIPELINE_EXEC),
                                     params=parameters, auth=self.__get_auth)
-            print(response.status_code)
+            if response.status_code >= 400:
+                result = xmltodict(response.content)
+                raise AirflowException('{}: {}'.format(
+                    result['webresult']['result'],
+                    result['webresult']['message'])
+                )
+            else:
+                return xmltodict.parse(response.content)
 
         def stop_pipeline_execution(self, pipe_name, pipe_id):
             parameters = {'name':pipe_name, 'id':pipe_id,'xml':'Y'}
             response = requests.get(self.__get_url(self.STOP_PIPELINE_EXEC),
                                     params=parameters, auth=self.__get_auth)
-            print(response.status_code)
+            if response.status_code >= 400:
+                result = xmltodict(response.content)
+                raise AirflowException('{}: {}'.format(
+                    result['webresult']['result'],
+                    result['webresult']['message'])
+                )
+            else:
+                return xmltodict.parse(response.content)
 
 
         def register_workflow(self):
@@ -99,26 +142,41 @@ class HopHook(BaseHook):
             parameters = {'name':workflow_name, 'id':workflow_id,'xml':'Y'}
             response = requests.get(self.__get_url(self.WORKFLOW_STATUS),
                                     params=parameters, auth=self.__get_auth)
-            print(response.status_code)
+            if response.status_code >= 400:
+                result = xmltodict(response.content)
+                raise AirflowException('{}: {}'.format(
+                    result['webresult']['result'],
+                    result['webresult']['message'])
+                )
+            else:
+                return xmltodict.parse(response.content)
 
         def start_workflow(self, workflow_name, workflow_id):
             parameters = {'name':workflow_name, 'id':workflow_id,'xml':'Y'}
             response = requests.get(self.__get_url(self.START_WORKFLOW),
                                     params=parameters, auth=self.__get_auth)
-            print(response.status_code)
+            if response.status_code >= 400:
+                result = xmltodict(response.content)
+                raise AirflowException('{}: {}'.format(
+                    result['webresult']['result'],
+                    result['webresult']['message'])
+                )
+            else:
+                return xmltodict.parse(response.content)
 
         def stop_workflow(self, workflow_name, workflow_id):
             parameters = {'name':workflow_name, 'id':workflow_id,'xml':'Y'}
             response = requests.get(self.__get_url(self.STOP_WORKFLOW),
                                     params=parameters, auth=self.__get_auth)
-            print(response.status_code)
+            if response.status_code >= 400:
+                result = xmltodict(response.content)
+                raise AirflowException('{}: {}'.format(
+                    result['webresult']['result'],
+                    result['webresult']['message'])
+                )
+            else:
+                return xmltodict.parse(response.content)
 
-
-        def __get_url(self,endpoint):
-            return f'https://{self.host}:{self.port}{endpoint}'
-
-        def __get_auth(self):
-            return HTTPBasicAuth(self.username,self.password)
 
     def __init__(
             self,
