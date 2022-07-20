@@ -23,9 +23,16 @@ class XMLBuilder:
     """
     Builds an XML file to be sent through HTTP protocol
     """
-    def __init__(self, metastore_file, hop_config):
+    def __init__(
+                self,
+                metastore_file,
+                hop_config,
+                project_config,
+                environment_config = None):
         self.metastore_file = metastore_file
         self.hop_config = hop_config
+        self.project_config = project_config
+        self.environment_config = environment_config
 
     def get_workflow_xml(self, filename) -> str:
         root = Element('workflow_configuration')
@@ -88,6 +95,25 @@ class XMLBuilder:
         project_home_var.append(self.__generate_element('value',
                                                         'config/projects/default'))
         root.append(project_home_var)
+
+        with open(self.project_config, encoding='utf-8') as f:
+            data = json.load(f)
+        project_vars = data['config']['variables']
+        for variable in project_vars:
+            new_variable = Element('variable')
+            new_variable.append(self.__generate_element('name',variable['name']))
+            new_variable.append(self.__generate_element('value',variable['value']))
+            root.append(new_variable)
+
+        if self.environment_config is not None:
+            with open(self.environment_config, encoding='utf-8') as f:
+                data = json.load(f)
+            environment_vars = data['variables']
+            for variable in environment_vars:
+                new_variable = Element('variable')
+                new_variable.append(self.__generate_element('name', variable['name']))
+                new_variable.append(self.__generate_element('value', variable['value']))
+                root.append(new_variable)
 
         jdk_debug = Element('variable')
         jdk_debug.append(self.__generate_element('name','jdk.debug'))
