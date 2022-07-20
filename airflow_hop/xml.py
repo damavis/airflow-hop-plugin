@@ -44,13 +44,7 @@ class XMLBuilder:
 
     def __get_workflow_execuion_config(self) -> Element:
         root = Element('workflow_execution_configuration')
-        root.append(self.__generate_element('parameters'))      # TODO: Implement parameters
         root.append(self.__get_variables())
-        root.append(self.__generate_element('log_level','Basic'))
-        root.append(self.__generate_element('clear_log','Y'))
-        root.append(self.__generate_element('start_copy_name'))
-        root.append(self.__generate_element('gather_metrics','Y'))
-        root.append(self.__generate_element('expand_remote_workflow','N'))
         root.append(self.__generate_element('run_configuration','local'))
         return root
 
@@ -65,15 +59,7 @@ class XMLBuilder:
 
     def __get_pipeline_execution_config(self, pipeline_config) -> Element:
         root = Element('pipeline_execution_configuration')
-        root.append(self.__generate_element('pass_export','N'))
-        root.append(self.__generate_element('parameters'))      # TODO: Implement parameters
         root.append(self.__get_variables(pipeline_config))
-        root.append(self.__generate_element('log_level','Basic'))
-        root.append(self.__generate_element('log_filename'))
-        root.append(self.__generate_element('log_file_append','N'))
-        root.append(self.__generate_element('create_parent_folder','N'))
-        root.append(self.__generate_element('clear_log','Y'))
-        root.append(self.__generate_element('show_subcomponents','Y'))
         root.append(self.__generate_element('run_configuration','local'))
         return root
 
@@ -81,20 +67,12 @@ class XMLBuilder:
         with open(self.hop_config, encoding='utf-8') as f:
             data = json.load(f)
         variables = data['variables']
-        variables = sorted(variables, key = lambda x: x['name']) # TODO: Check if it's necessary
         root = Element('variables')
         for variable in variables:
             new_variable = Element('variable')
             new_variable.append(self.__generate_element('name', variable['name']))
             new_variable.append(self.__generate_element('value', variable['value']))
             root.append(new_variable)
-
-        project_home_var = Element('variable')
-        project_home_var.append(self.__generate_element('name','PROJECT_HOME'))
-         # TODO: Ask directory to user
-        project_home_var.append(self.__generate_element('value',
-                                                        'config/projects/default'))
-        root.append(project_home_var)
 
         if pipeline_config is not None:
             with open(pipeline_config, encoding='utf-8') as f:
