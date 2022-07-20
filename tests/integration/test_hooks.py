@@ -32,7 +32,7 @@ DEFAULT_METASTORE_FILE = '../assets/metadata.json'
 DEFAULT_PIPELINE_CONFIG = '../assets/remote_hop_server.json'
 DEFAULT_PIPELINE_NAME = 'fake-data-generate-person-record.hpl'
 DEFAULT_PIPELINE_PATH = f'../assets/{DEFAULT_PIPELINE_NAME}'
-DEFAULT_WORKFLOW_NAME = 'workflow-executor-child.hwf'
+DEFAULT_WORKFLOW_NAME = 'workflowTest.hwf'
 DEFAULT_WORKFLOW_PATH = f'../assets/{DEFAULT_WORKFLOW_NAME}'
 
 class TestHopHook(TestCase):
@@ -87,9 +87,6 @@ class TestHopHook(TestCase):
         self.assertEqual(result['webresult']['result'],'OK')
 
         result = client.start_workflow(DEFAULT_WORKFLOW_NAME, work_id)
-        self.assertEqual(result['webresult']['result'],'OK')
-
-        result = client.workflow_status(DEFAULT_WORKFLOW_NAME, work_id)
         self.assertEqual(result['webresult']['result'],'OK')
 
         result = {}

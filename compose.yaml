@@ -3,6 +3,8 @@ services:
     image: apache/hop:latest
     ports:
       - 8081:8081
+    volumes:
+      - ./pipelines:/home/hop/pipelines
     environment:
       HOP_SERVER_USER: cluster
       HOP_SERVER_PASS: cluster
