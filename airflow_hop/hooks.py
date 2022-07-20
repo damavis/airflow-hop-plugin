@@ -19,7 +19,7 @@ from airflow.hooks.base import BaseHook
 import requests
 import xmltodict
 from requests.auth import HTTPBasicAuth
-from xml_builder.xml_builder import XMLBuilder
+from airflow_hop.xml import XMLBuilder
 
 class HopHook(BaseHook):
     """
