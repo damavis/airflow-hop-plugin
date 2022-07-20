@@ -17,6 +17,7 @@ import time
 from unittest import TestCase
 
 from airflow_hop.hooks import HopHook
+from tests.unit.test_hooks import DEFAULT_PROJECT_CONFIGURATION
 
 SLEEP_TIME = 2
 
@@ -26,7 +27,9 @@ DEFAULT_USERNAME = 'cluster'
 DEFAULT_PASSWORD = 'cluster'
 DEFAULT_LOG_LEVEL = 'Basic'
 DEFAULT_HOP_CONFIGURATION = '../assets/hop-config.json'
+DEFLAUT_PROJECT_CONFIGURATION = '../assets/project-config.json'
 DEFAULT_METASTORE_FILE = '../assets/metadata.json'
+DEFAULT_PIPELINE_CONFIG = '../assets/remote_hop_server.json'
 DEFAULT_PIPELINE_NAME = 'fake-data-generate-person-record.hpl'
 DEFAULT_PIPELINE_PATH = f'../assets/{DEFAULT_PIPELINE_NAME}'
 DEFAULT_WORKFLOW_NAME = 'workflow-executor-child.hwf'
@@ -45,7 +48,8 @@ class TestHopHook(TestCase):
                                     DEFAULT_PASSWORD,
                                     DEFAULT_LOG_LEVEL,
                                     DEFAULT_METASTORE_FILE,
-                                    DEFAULT_HOP_CONFIGURATION)
+                                    DEFAULT_HOP_CONFIGURATION,
+                                    DEFAULT_PROJECT_CONFIGURATION)
 
     def test_client_constructor(self):
         client = self.__get_client()
@@ -55,11 +59,12 @@ class TestHopHook(TestCase):
         self.assertEqual(client.password, DEFAULT_PASSWORD)
         self.assertEqual(client.log_level, DEFAULT_LOG_LEVEL)
         self.assertEqual(client.metastore_file, DEFAULT_METASTORE_FILE)
-        self.assertEqual(client.config_file, DEFAULT_HOP_CONFIGURATION)
+        self.assertEqual(client.hop_config_file, DEFAULT_HOP_CONFIGURATION)
+        self.assertEqual(client.project_config_file, DEFAULT_PROJECT_CONFIGURATION)
 
     def test_run_pipeline_and_wait(self):
         client = self.__get_client()
-        result = client.register_pipeline(DEFAULT_PIPELINE_PATH)
+        result = client.register_pipeline(DEFAULT_PIPELINE_PATH, DEFAULT_PIPELINE_CONFIG)
         pipe_id = result['webresult']['id']
         self.assertEqual(result['webresult']['result'],'OK')
 

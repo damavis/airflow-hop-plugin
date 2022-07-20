@@ -55,19 +55,19 @@ class XMLBuilder:
         return root
 
 
-    def get_pipeline_xml(self, filename) -> str:
+    def get_pipeline_xml(self, pipeline_file, pipeline_config) -> str:
         root = Element('pipeline_configuration')
-        pipeline = ElementTree.parse(filename)
+        pipeline = ElementTree.parse(pipeline_file)
         root.append(pipeline.getroot())
-        root.append(self.__get_pipeline_execution_config())
+        root.append(self.__get_pipeline_execution_config(pipeline_config))
         root.append(self.__generate_element('metastore_json', self.__generate_metastore()))
         return ElementTree.tostring(root, encoding='unicode')
 
-    def __get_pipeline_execution_config(self) -> Element:
+    def __get_pipeline_execution_config(self, pipeline_config) -> Element:
         root = Element('pipeline_execution_configuration')
         root.append(self.__generate_element('pass_export','N'))
         root.append(self.__generate_element('parameters'))      # TODO: Implement parameters
-        root.append(self.__get_variables())
+        root.append(self.__get_variables(pipeline_config))
         root.append(self.__generate_element('log_level','Basic'))
         root.append(self.__generate_element('log_filename'))
         root.append(self.__generate_element('log_file_append','N'))
@@ -77,7 +77,7 @@ class XMLBuilder:
         root.append(self.__generate_element('run_configuration','local'))
         return root
 
-    def __get_variables(self) -> Element:
+    def __get_variables(self, pipeline_config = None) -> Element:
         with open(self.hop_config, encoding='utf-8') as f:
             data = json.load(f)
         variables = data['variables']
@@ -95,6 +95,16 @@ class XMLBuilder:
         project_home_var.append(self.__generate_element('value',
                                                         'config/projects/default'))
         root.append(project_home_var)
+
+        if pipeline_config is not None:
+            with open(pipeline_config, encoding='utf-8') as f:
+                data = json.load(f)
+            pipeline_vars = data['configurationVariables']
+            for variable in pipeline_vars:
+                new_variable = Element('variable')
+                new_variable.append(self.__generate_element('name',variable['name']))
+                new_variable.append(self.__generate_element('value',variable['value']))
+                root.append(new_variable)
 
         with open(self.project_config, encoding='utf-8') as f:
             data = json.load(f)

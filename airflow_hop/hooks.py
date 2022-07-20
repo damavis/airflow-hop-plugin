@@ -51,14 +51,16 @@ class HopHook(BaseHook):
                 password,
                 log_level,
                 metastore_file,
-                config_file):
+                hop_config_file,
+                project_config_file):
             self.host = host
             self.port = port
             self.username = username
             self.password = password
             self.log_level = log_level
             self.metastore_file = metastore_file
-            self.config_file = config_file
+            self.hop_config_file = hop_config_file
+            self.project_config_file = project_config_file
 
         def __get_url(self,endpoint):
             return f'http://{self.host}:{self.port}{endpoint}'
@@ -66,9 +68,12 @@ class HopHook(BaseHook):
         def __get_auth(self):
             return HTTPBasicAuth(self.username,self.password)
 
-        def register_pipeline(self, pipe_file):
-            xml_builder = XMLBuilder(self.metastore_file, self.config_file)
-            data = xml_builder.get_pipeline_xml(pipe_file)
+        def register_pipeline(self, pipe_file, pipe_config):
+            xml_builder = XMLBuilder(
+                            self.metastore_file,
+                            self.hop_config_file,
+                            self.project_config_file)
+            data = xml_builder.get_pipeline_xml(pipe_file, pipe_config)
             parameters = {'xml':'Y'}
             response = requests.post(self.__get_url(self.REGISTER_PIPELINE),
                                     params=parameters,auth=self.__get_auth(),
@@ -136,7 +141,10 @@ class HopHook(BaseHook):
 
 
         def register_workflow(self, workflow_file):
-            xml_builder = XMLBuilder(self.metastore_file, self.config_file)
+            xml_builder = XMLBuilder(
+                                self.metastore_file,
+                                self.hop_config_file,
+                                self.project_config_file)
             data = xml_builder.get_workflow_xml(workflow_file)
             parameters = {'xml':'Y'}
             response = requests.post(self.__get_url(self.REGISTER_WORKFLOW),
@@ -194,8 +202,9 @@ class HopHook(BaseHook):
             self,
             source,
             metastore_file,
-            config_file,
-            conn_id='hop_default',
+            hop_config_file,
+            project_config_file,
+            conn_id = 'hop_default',
             log_level = 'Basic'):
         super().__init__(source)
         self.conn_id = conn_id
@@ -203,7 +212,8 @@ class HopHook(BaseHook):
         self.extras = self.connection.extra_dejson
         self.log_level = log_level
         self.metastore_file = metastore_file
-        self.config_file = config_file
+        self.hop_config_file = hop_config_file
+        self.project_config_file = project_config_file
         self.hop_client = None
 
     def get_conn(self) -> Any:
@@ -217,6 +227,7 @@ class HopHook(BaseHook):
             password = self.connection.password,
             log_level = self.log_level,
             metastore_file = self.metastore_file,
-            config_file = self.config_file
+            hop_config_file = self.hop_config_file,
+            project_config_file = self.project_config_file
             )
         return self.hop_client
