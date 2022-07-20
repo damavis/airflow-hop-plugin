@@ -24,7 +24,6 @@ DEFAULT_PASSWORD = 'cluster'
 DEFAULT_LOG_LEVEL = 'Basic'
 DEFAULT_HOP_CONFIGURATION = 'hop-config.json'
 DEFAULT_METASTORE_FILE = 'metadata.json'
-DEFAULT_PIPELINE = 'abort-basic.hpl'
 
 class TestHopHook(TestCase):
     """
