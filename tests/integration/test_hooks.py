@@ -85,6 +85,8 @@ class TestHopHook(TestCase):
         self.assertEqual(result['webresult']['result'],'OK')
 
         result = client.workflow_status(DEFAULT_WORKFLOW_NAME, work_id)
+        self.assertEqual(result['webresult']['result'],'OK')
+
         result = {}
         while not result or result['workflow-status']['status_desc'] != 'Finished':
             result = client.workflow_status(DEFAULT_WORKFLOW_NAME, work_id)
