@@ -32,7 +32,7 @@ class XMLBuilder:
         workflow = ElementTree.parse(filename)
         root.append(workflow.getroot())
         root.append(self.__get_workflow_execuion_config())
-        root.append(self.__generate_element('metastore_json'), self.__generate_metastore)
+        root.append(self.__generate_element('metastore_json', self.__generate_metastore()))
         return ElementTree.tostring(root, encoding='unicode')
 
     def __get_workflow_execuion_config(self) -> Element:
@@ -53,7 +53,7 @@ class XMLBuilder:
         pipeline = ElementTree.parse(filename)
         root.append(pipeline.getroot())
         root.append(self.__get_pipeline_execution_config())
-        root.append(self.__generate_element('metastore_json'), self.__generate_metastore)
+        root.append(self.__generate_element('metastore_json', self.__generate_metastore()))
         return ElementTree.tostring(root, encoding='unicode')
 
     def __get_pipeline_execution_config(self) -> Element:
