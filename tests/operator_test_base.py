@@ -29,7 +29,7 @@ class OperatorTestBase(TestBase):
     def setUpClass(cls):
         super().setUpClass()
         conn = Connection(conn_id='hop_default')
-        extra = json.dumps({'config_path': f'{cls.TESTS_PATH}/resources/config'})
+        extra = json.dumps({'config_path': f'{cls.TESTS_PATH}/assets/config'})
 
         session = settings.Session()
 

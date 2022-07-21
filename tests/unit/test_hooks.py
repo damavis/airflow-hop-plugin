@@ -22,9 +22,13 @@ DEFAULT_PORT = 8081
 DEFAULT_USERNAME = 'cluster'
 DEFAULT_PASSWORD = 'cluster'
 DEFAULT_LOG_LEVEL = 'Basic'
-DEFAULT_HOP_CONFIGURATION = 'hop-config.json'
-DEFAULT_METASTORE_FILE = 'metadata.json'
-DEFAULT_PROJECT_CONFIGURATION = 'project-config.json'
+DEFAULT_HOP_CONFIGURATION = 'home/user/hop/config'
+DEFAULT_PROJECT_NAME = 'default'
+DEFAULT_HOP_CONFIG_FILE = f'{DEFAULT_HOP_CONFIGURATION}/hop-config.json'
+DEFAULT_METASTORE_FILE = f'{DEFAULT_HOP_CONFIGURATION}/projects/' \
+            f'{DEFAULT_PROJECT_NAME}/metadata.json'
+DEFAULT_PROJECT_CONFIG_FILE = f'{DEFAULT_HOP_CONFIGURATION}/projects/' \
+            f'{DEFAULT_PROJECT_NAME}/project-config.json'
 
 class TestHopHook(TestCase):
     """
@@ -38,14 +42,13 @@ class TestHopHook(TestCase):
                                     DEFAULT_USERNAME,
                                     DEFAULT_PASSWORD,
                                     DEFAULT_LOG_LEVEL,
-                                    DEFAULT_METASTORE_FILE,
                                     DEFAULT_HOP_CONFIGURATION,
-                                    DEFAULT_PROJECT_CONFIGURATION)
+                                    DEFAULT_PROJECT_NAME)
         self.assertEqual(client.host, DEFAULT_HOST)
         self.assertEqual(client.port, DEFAULT_PORT)
         self.assertEqual(client.username, DEFAULT_USERNAME)
         self.assertEqual(client.password, DEFAULT_PASSWORD)
         self.assertEqual(client.log_level, DEFAULT_LOG_LEVEL)
+        self.assertEqual(client.hop_config_file, DEFAULT_HOP_CONFIG_FILE)
         self.assertEqual(client.metastore_file, DEFAULT_METASTORE_FILE)
-        self.assertEqual(client.hop_config_file, DEFAULT_HOP_CONFIGURATION)
-        self.assertEqual(client.project_config_file, DEFAULT_PROJECT_CONFIGURATION)
+        self.assertEqual(client.project_config_file, DEFAULT_PROJECT_CONFIG_FILE)

@@ -50,17 +50,17 @@ class HopHook(BaseHook):
                 username,
                 password,
                 log_level,
-                metastore_file,
-                hop_config_file,
-                project_config_file):
+                hop_config_path,
+                project_name):
             self.host = host
             self.port = port
             self.username = username
             self.password = password
             self.log_level = log_level
-            self.metastore_file = metastore_file
-            self.hop_config_file = hop_config_file
-            self.project_config_file = project_config_file
+            self.metastore_file = f'{hop_config_path}/projects/{project_name}/metadata.json'
+            self.hop_config_file = f'{hop_config_path}/hop-config.json'
+            self.project_config_file = f'{hop_config_path}/projects/' \
+                                       f'{project_name}/project-config.json'
 
         def __get_url(self,endpoint):
             return f'http://{self.host}:{self.port}{endpoint}'
@@ -200,20 +200,17 @@ class HopHook(BaseHook):
 
     def __init__(
             self,
-            source,
-            metastore_file,
-            hop_config_file,
-            project_config_file,
+            project_name,
             conn_id = 'hop_default',
             log_level = 'Basic'):
-        super().__init__(source)
+        """Hop Hook constructor to initialize the object."""
+
         self.conn_id = conn_id
         self.connection = self.get_connection(conn_id)
         self.extras = self.connection.extra_dejson
         self.log_level = log_level
-        self.metastore_file = metastore_file
-        self.hop_config_file = hop_config_file
-        self.project_config_file = project_config_file
+        self.extras = self.connection.extra_dejson
+        self.project_name = project_name
         self.hop_client = None
 
     def get_conn(self) -> Any:
@@ -223,11 +220,9 @@ class HopHook(BaseHook):
         self.hop_client = self.HopServerConnection(
             host = self.connection.host,
             port = self.connection.port,
-            username = self.connection.username,
+            username = self.connection.login,
             password = self.connection.password,
             log_level = self.log_level,
-            metastore_file = self.metastore_file,
-            hop_config_file = self.hop_config_file,
-            project_config_file = self.project_config_file
-            )
+            hop_config_path = self.extras.get('config_path'),
+            project_name = self.project_name)
         return self.hop_client

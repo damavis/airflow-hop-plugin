@@ -17,23 +17,32 @@ import time
 from unittest import TestCase
 
 from airflow_hop.hooks import HopHook
-from tests.unit.test_hooks import DEFAULT_PROJECT_CONFIGURATION
 
 SLEEP_TIME = 2
 
-DEFAULT_HOST = '127.0.0.1'
+DEFAULT_HOST = 'localhost'
 DEFAULT_PORT = 8081
 DEFAULT_USERNAME = 'cluster'
 DEFAULT_PASSWORD = 'cluster'
 DEFAULT_LOG_LEVEL = 'Basic'
-DEFAULT_HOP_CONFIGURATION = '../assets/hop-config.json'
-DEFAULT_PROJECT_CONFIGURATION = '../assets/project-config.json'
-DEFAULT_METASTORE_FILE = '../assets/metadata.json'
-DEFAULT_PIPELINE_CONFIG = '../assets/remote_hop_server.json'
+
+DEFAULT_HOP_CONFIGURATION = '../../tests/assets/config'
+DEFAULT_PROJECT_NAME = 'default'
+DEFAULT_HOP_CONFIG_FILE = f'{DEFAULT_HOP_CONFIGURATION}/hop-config.json'
+DEFAULT_METASTORE_FILE = f'{DEFAULT_HOP_CONFIGURATION}/projects/' \
+    f'{DEFAULT_PROJECT_NAME}/metadata.json'
+DEFAULT_PROJECT_CONFIG_FILE = f'{DEFAULT_HOP_CONFIGURATION}/projects/' \
+    f'{DEFAULT_PROJECT_NAME}/project-config.json'
+
+DEFAULT_PIPE_CONFIG_NAME = 'remote_hop_server.json'
+DEFAULT_PIPELINE_CONFIG = f'{DEFAULT_HOP_CONFIGURATION}/projects/{DEFAULT_PROJECT_NAME}/' \
+    f'metadata/pipeline-run-configuration/{DEFAULT_PIPE_CONFIG_NAME}'
 DEFAULT_PIPELINE_NAME = 'get_param.hpl' #'fake-data-generate-person-record.hpl'
-DEFAULT_PIPELINE_PATH = f'../assets/{DEFAULT_PIPELINE_NAME}'
+DEFAULT_PIPELINE_PATH = f'{DEFAULT_HOP_CONFIGURATION}/projects/{DEFAULT_PROJECT_NAME}/' \
+    f'transforms/{DEFAULT_PIPELINE_NAME}'
 DEFAULT_WORKFLOW_NAME = 'workflowTest.hwf'
-DEFAULT_WORKFLOW_PATH = f'../assets/{DEFAULT_WORKFLOW_NAME}'
+DEFAULT_WORKFLOW_PATH = f'{DEFAULT_HOP_CONFIGURATION}/projects/{DEFAULT_PROJECT_NAME}/' \
+    f'transforms/{DEFAULT_WORKFLOW_NAME}'
 
 class TestHopHook(TestCase):
     """
@@ -47,9 +56,8 @@ class TestHopHook(TestCase):
                                     DEFAULT_USERNAME,
                                     DEFAULT_PASSWORD,
                                     DEFAULT_LOG_LEVEL,
-                                    DEFAULT_METASTORE_FILE,
                                     DEFAULT_HOP_CONFIGURATION,
-                                    DEFAULT_PROJECT_CONFIGURATION)
+                                    DEFAULT_PROJECT_NAME)
 
     def test_client_constructor(self):
         client = self.__get_client()
@@ -58,9 +66,9 @@ class TestHopHook(TestCase):
         self.assertEqual(client.username, DEFAULT_USERNAME)
         self.assertEqual(client.password, DEFAULT_PASSWORD)
         self.assertEqual(client.log_level, DEFAULT_LOG_LEVEL)
+        self.assertEqual(client.hop_config_file, DEFAULT_HOP_CONFIG_FILE)
         self.assertEqual(client.metastore_file, DEFAULT_METASTORE_FILE)
-        self.assertEqual(client.hop_config_file, DEFAULT_HOP_CONFIGURATION)
-        self.assertEqual(client.project_config_file, DEFAULT_PROJECT_CONFIGURATION)
+        self.assertEqual(client.project_config_file, DEFAULT_PROJECT_CONFIG_FILE)
 
     def test_run_pipeline_and_wait(self):
         client = self.__get_client()
