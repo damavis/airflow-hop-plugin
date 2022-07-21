@@ -23,6 +23,11 @@ class XMLBuilder:
     """
     Builds an XML file to be sent through HTTP protocol
     """
+
+    PIPE_INFO_POS = 0
+    PIPE_PARAM_POS = 7
+    WORKFLOW_PARAM_POS = 9
+
     def __init__(
                 self,
                 metastore_file,
@@ -34,18 +39,31 @@ class XMLBuilder:
         self.project_config = project_config
         self.environment_config = environment_config
 
-    def get_workflow_xml(self, filename) -> str:
+    def get_workflow_xml(self, workflow_file) -> str:
         root = Element('workflow_configuration')
-        workflow = ElementTree.parse(filename)
+        workflow = ElementTree.parse(workflow_file)
         root.append(workflow.getroot())
-        root.append(self.__get_workflow_execuion_config())
+        root.append(self.__get_workflow_execuion_config(workflow_file))
         root.append(self.__generate_element('metastore_json', self.__generate_metastore()))
         return ElementTree.tostring(root, encoding='unicode')
 
-    def __get_workflow_execuion_config(self) -> Element:
+    def __get_workflow_execuion_config(self, workflow_file) -> Element:
         root = Element('workflow_execution_configuration')
+        root.append(self.__get_workflow_parameters(workflow_file))
         root.append(self.__get_variables())
         root.append(self.__generate_element('run_configuration','local'))
+        return root
+
+    def __get_workflow_parameters(self, workflow_file):
+        tree = ElementTree.parse(workflow_file)
+        tree_root = tree.getroot()
+        parameters = tree_root.findall('parameters')
+        root = Element('parameters')
+        for parameter in parameters[0]:
+            new_param = Element('parameter')
+            new_param.append(self.__generate_element('name',parameter[0].text))
+            new_param.append(self.__generate_element('value',parameter[1].text))
+            root.append(new_param)
         return root
 
 
@@ -53,14 +71,27 @@ class XMLBuilder:
         root = Element('pipeline_configuration')
         pipeline = ElementTree.parse(pipeline_file)
         root.append(pipeline.getroot())
-        root.append(self.__get_pipeline_execution_config(pipeline_config))
+        root.append(self.__get_pipeline_execution_config(pipeline_config, pipeline_file))
         root.append(self.__generate_element('metastore_json', self.__generate_metastore()))
         return ElementTree.tostring(root, encoding='unicode')
 
-    def __get_pipeline_execution_config(self, pipeline_config) -> Element:
+    def __get_pipeline_execution_config(self, pipeline_config, pipeline_file) -> Element:
         root = Element('pipeline_execution_configuration')
+        root.append(self.__get_pipe_parameters(pipeline_file))
         root.append(self.__get_variables(pipeline_config))
         root.append(self.__generate_element('run_configuration','local'))
+        return root
+
+    def __get_pipe_parameters(self, pipeline_file) -> Element:
+        tree = ElementTree.parse(pipeline_file)
+        tree_root = tree.getroot()
+        parameters = tree_root[0].findall('parameters')
+        root = Element('parameters')
+        for parameter in parameters[0]:
+            new_param = Element('parameter')
+            new_param.append(self.__generate_element('name',parameter[0].text))
+            new_param.append(self.__generate_element('value',parameter[1].text))
+            root.append(new_param)
         return root
 
     def __get_variables(self, pipeline_config = None) -> Element:
