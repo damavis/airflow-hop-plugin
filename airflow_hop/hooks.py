@@ -12,7 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from typing import Any
 from airflow.exceptions import AirflowException
 from airflow.hooks.base import BaseHook
 
@@ -213,7 +212,7 @@ class HopHook(BaseHook):
         self.project_name = project_name
         self.hop_client = None
 
-    def get_conn(self) -> Any:
+    def get_conn(self) -> HopServerConnection:
         if self.hop_client:
             return self.hop_client
 
