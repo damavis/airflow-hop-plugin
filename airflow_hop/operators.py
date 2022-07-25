@@ -36,8 +36,10 @@ class HopBaseOperator(BaseOperator):
 
     template_fields = ('task_params',)
 
-    def _log_logging_string(self, logging_string):
-        cdata = re.match(r'\<\!\[CDATA\[([^\]]+)\]\]\>', logging_string)
+    def _log_logging_string(self, raw_logging_string):
+        logs = raw_logging_string
+        cdata = re.match(r'\<\!\[CDATA\[([^\]]+)\]\]\>', logs)
+        cdata = cdata.group(1) if cdata else raw_logging_string
         decoded_lines = zlib.decompress(base64.b64decode(cdata),
                                         16 + zlib.MAX_WBITS)
         if decoded_lines:
