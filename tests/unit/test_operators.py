@@ -27,6 +27,8 @@ DEFAULT_PIPE_CONFIG = f'tests/assets/config/projects/{DEFAULT_PROJECT_NAME}' \
             f'/metadata/pipeline-run-configuration/remote_hop_server.json'
 
 class MockedPipelineRespone:
+    """Create mocked responses"""
+
     def __init__(self, content, status_code):
         self.content = content
         self.status_code = status_code
@@ -100,8 +102,9 @@ def mock_requests(**kwargs) -> MockedPipelineRespone:
         </pipeline-status>
         """, 200)
 
+
 class TestPipelineOperator(OperatorTestBase):
-    """Test Pipeline Operator"""
+    """Perform tests regarding operators"""
 
     @mock.patch('requests.get', side_effect = mock_requests)
     @mock.patch('requests.post', side_effect = mock_requests)

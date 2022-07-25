@@ -26,7 +26,7 @@ PIPELINE_CONFIGURATION = '../assets/config/projects/default/metadata/' \
                 'pipeline-run-configuration/remote_hop_server.json'
 
 class TestPipelineOperator(OperatorTestBase):
-    """Test Pipeline Operator"""
+    """Perform tests regarding operators"""
 
     def test_execute(self):
         op = HopPipelineOperator(
