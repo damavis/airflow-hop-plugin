@@ -74,9 +74,9 @@ class HopHook(BaseHook):
                             self.project_config_file)
             data = xml_builder.get_pipeline_xml(pipe_file, pipe_config)
             parameters = {'xml':'Y'}
-            response = requests.post(url = self.__get_url(self.REGISTER_PIPELINE),
-                                    params = parameters,auth = self.__get_auth(),
-                                    data = data)
+            response = requests.post(url=self.__get_url(self.REGISTER_PIPELINE),
+                                    params=parameters,auth=self.__get_auth(),
+                                    data=data)
             if response.status_code >= 400:
                 result = xmltodict(response.content)
                 raise AirflowException('{}: {}'.format(
@@ -88,8 +88,8 @@ class HopHook(BaseHook):
 
         def pipeline_status(self, pipe_name, pipe_id):
             parameters = {'name':pipe_name, 'id':pipe_id,'xml':'Y'}
-            response = requests.get(url = self.__get_url(self.PIPELINE_STATUS),
-                                    params = parameters, auth = self.__get_auth())
+            response = requests.get(url=self.__get_url(self.PIPELINE_STATUS),
+                                    params=parameters, auth=self.__get_auth())
             if response.status_code >= 400:
                 result = xmltodict(response.content)
                 raise AirflowException('{}: {}'.format(
@@ -101,8 +101,8 @@ class HopHook(BaseHook):
 
         def prepare_pipeline_exec(self, pipe_name, pipe_id):
             parameters = {'name':pipe_name, 'id':pipe_id,'xml':'Y'}
-            response = requests.get(url = self.__get_url(self.PREPARE_PIPELINE_EXEC),
-                                    params = parameters, auth = self.__get_auth())
+            response = requests.get(url=self.__get_url(self.PREPARE_PIPELINE_EXEC),
+                                    params=parameters, auth=self.__get_auth())
             if response.status_code >= 400:
                 result = xmltodict(response.content)
                 raise AirflowException('{}: {}'.format(
@@ -127,8 +127,8 @@ class HopHook(BaseHook):
 
         def stop_pipeline_execution(self, pipe_name, pipe_id):
             parameters = {'name':pipe_name, 'id':pipe_id,'xml':'Y'}
-            response = requests.get(url = self.__get_url(self.STOP_PIPELINE_EXEC),
-                                    params = parameters, auth = self.__get_auth())
+            response = requests.get(url=self.__get_url(self.STOP_PIPELINE_EXEC),
+                                    params=parameters, auth=self.__get_auth())
             if response.status_code >= 400:
                 result = xmltodict(response.content)
                 raise AirflowException('{}: {}'.format(
@@ -146,9 +146,9 @@ class HopHook(BaseHook):
                                 self.project_config_file)
             data = xml_builder.get_workflow_xml(workflow_file)
             parameters = {'xml':'Y'}
-            response = requests.post(url = self.__get_url(self.REGISTER_WORKFLOW),
-                                    params = parameters,auth = self.__get_auth(),
-                                    data = data)
+            response = requests.post(url=self.__get_url(self.REGISTER_WORKFLOW),
+                                    params=parameters,auth=self.__get_auth(),
+                                    data=data)
             if response.status_code >= 400:
                 result = xmltodict(response.content)
                 raise AirflowException('{}: {}'.format(
@@ -160,8 +160,8 @@ class HopHook(BaseHook):
 
         def workflow_status(self, workflow_name, workflow_id):
             parameters = {'name':workflow_name, 'id':workflow_id,'xml':'Y'}
-            response = requests.get(url = self.__get_url(self.WORKFLOW_STATUS),
-                                    params = parameters, auth = self.__get_auth())
+            response = requests.get(url=self.__get_url(self.WORKFLOW_STATUS),
+                                    params=parameters, auth=self.__get_auth())
             if response.status_code >= 400:
                 result = xmltodict(response.content)
                 raise AirflowException('{}: {}'.format(
@@ -173,8 +173,8 @@ class HopHook(BaseHook):
 
         def start_workflow(self, workflow_name, workflow_id):
             parameters = {'name':workflow_name, 'id':workflow_id, 'xml':'Y'}
-            response = requests.get(url = self.__get_url(self.START_WORKFLOW),
-                                    params = parameters, auth = self.__get_auth())
+            response = requests.get(url=self.__get_url(self.START_WORKFLOW),
+                                    params=parameters, auth=self.__get_auth())
             if response.status_code >= 400:
                 result = xmltodict(response.content)
                 raise AirflowException('{}: {}'.format(
@@ -186,8 +186,8 @@ class HopHook(BaseHook):
 
         def stop_workflow(self, workflow_name, workflow_id):
             parameters = {'name':workflow_name, 'id':workflow_id,'xml':'Y'}
-            response = requests.get(url = self.__get_url(self.STOP_WORKFLOW),
-                                    params = parameters, auth = self.__get_auth())
+            response = requests.get(url=self.__get_url(self.STOP_WORKFLOW),
+                                    params=parameters, auth=self.__get_auth())
             if response.status_code >= 400:
                 result = xmltodict(response.content)
                 raise AirflowException('{}: {}'.format(

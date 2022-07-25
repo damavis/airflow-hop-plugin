@@ -18,36 +18,38 @@ from airflow import AirflowException
 from airflow_hop.operators import HopPipelineOperator
 from tests.operator_test_base import OperatorTestBase
 
-PROJECT = 'default'
-
-PIPELINE_ERR = 'whatever.hpl'
-PIPELINE_OK = '../assets/config/projects/default/transforms/get_param.hpl'
-PIPELINE_CONFIGURATION = '../assets/config/projects/default/metadata/' \
-                'pipeline-run-configuration/remote_hop_server.json'
 
 class TestPipelineOperator(OperatorTestBase):
     """Perform tests regarding operators"""
 
+    PROJECT = 'default'
+
+    PIPELINE_ERR = 'whatever.hpl'
+    PIPELINE_OK = f'{OperatorTestBase.TESTS_PATH}/assets/config/projects/'\
+            'default/transforms/get_param.hpl'
+    PIPELINE_CONFIGURATION = f'{OperatorTestBase.TESTS_PATH}/assets/config/' \
+            'projects/default/metadata/pipeline-run-configuration/remote_hop_server.json'
+
     def test_execute(self):
         op = HopPipelineOperator(
             task_id = 'test_pipeline_operator',
-            pipeline = PIPELINE_OK,
-            project_name = PROJECT,
+            pipeline = self.PIPELINE_OK,
+            project_name = self.PROJECT,
             log_level = 'Basic')
 
         try:
-            op.execute(PIPELINE_CONFIGURATION,context = {})
+            op.execute(self.PIPELINE_CONFIGURATION,context = {})
         except Exception as ex:
             raise ex
 
     def test_execute_non_existent_pipeline(self):
         op = HopPipelineOperator(
             task_id = 'test_pipeline_operator',
-            pipeline = PIPELINE_ERR,
-            project_name = PROJECT,
+            pipeline = self.PIPELINE_ERR,
+            project_name = self.PROJECT,
             log_level = 'Basic')
 
         with self.assertRaises(AirflowException) as context:
-            op.execute(PIPELINE_CONFIGURATION,context = {})
+            op.execute(self.PIPELINE_CONFIGURATION,context = {})
 
-        self.assertTrue(f'ERROR: pipeline {PIPELINE_ERR} not found' in str(context.exception))
+        self.assertTrue(f'ERROR: pipeline {self.PIPELINE_ERR} not found' in str(context.exception))

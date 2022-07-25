@@ -34,8 +34,6 @@ class HopBaseOperator(BaseOperator):
     ]
     END_STATUSES = FINISHED_STATUSES + ERROR_STATUSES
 
-    template_fields = ('task_params',)
-
     def _log_logging_string(self, raw_logging_string):
         logs = raw_logging_string
         cdata = re.match(r'\<\!\[CDATA\[([^\]]+)\]\]\>', logs)
@@ -50,12 +48,14 @@ class HopBaseOperator(BaseOperator):
 class HopWorkflowOperator(HopBaseOperator):
     """Hop Workflow Operator"""
 
+    template_fields = ('task_params',)
+
     def __init__(self,
                  workflow,
+                 *args,
                  params=None,
                  hop_conn_id='hop_default',
-                 *args,
-                 **kwargs): # pylint: disable = keyword-arg-before-vararg
+                 **kwargs):
         super().__init__(*args, **kwargs)
         self.workflow = workflow
         self.hop_conn_id = hop_conn_id
@@ -70,14 +70,16 @@ class HopPipelineOperator(HopBaseOperator):
 
     LOG_TEMPLATE = '%s: %s, with id %s'
 
+    template_fields = ('task_params',)
+
     def __init__(self,
                  pipeline,
                  project_name,
                  log_level,
+                 *args,
                  params=None,
                  hop_conn_id='hop_default',
-                 *args,
-                 **kwargs):  # pylint: disable = keyword-arg-before-vararg
+                 **kwargs):
         super().__init__(*args, **kwargs)
         self.pipeline = pipeline
         self.project_name = project_name
