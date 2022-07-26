@@ -19,6 +19,8 @@ import json
 from xml.etree import ElementTree
 from xml.etree.ElementTree import Element
 
+from airflow import AirflowException
+
 class XMLBuilder:
     """
     Builds an XML file to be sent through HTTP protocol
@@ -69,11 +71,14 @@ class XMLBuilder:
 
     def get_pipeline_xml(self, pipeline_file, pipeline_config) -> str:
         root = Element('pipeline_configuration')
-        pipeline = ElementTree.parse(pipeline_file)
-        root.append(pipeline.getroot())
-        root.append(self.__get_pipeline_execution_config(pipeline_config, pipeline_file))
-        root.append(self.__generate_element('metastore_json', self.__generate_metastore()))
-        return ElementTree.tostring(root, encoding='unicode')
+        try:
+            pipeline = ElementTree.parse(pipeline_file)
+            root.append(pipeline.getroot())
+            root.append(self.__get_pipeline_execution_config(pipeline_config, pipeline_file))
+            root.append(self.__generate_element('metastore_json', self.__generate_metastore()))
+            return ElementTree.tostring(root, encoding='unicode')
+        except FileNotFoundError as error:
+            raise AirflowException(f'ERROR: pipeline {pipeline_file} not found') from error
 
     def __get_pipeline_execution_config(self, pipeline_config, pipeline_file) -> Element:
         root = Element('pipeline_execution_configuration')
