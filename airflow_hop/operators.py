@@ -26,6 +26,7 @@ from airflow_hop.hooks import HopHook
 class HopBaseOperator(BaseOperator):
     """Hop Base Operator"""
 
+    LOG_TEMPLATE = '%s: %s, with id %s'
     FINISHED_STATUSES = ['Finished']
     ERROR_STATUSES = [
         'Stopped',
@@ -52,29 +53,70 @@ class HopWorkflowOperator(HopBaseOperator):
 
     def __init__(self,
                  workflow,
+                 project_name,
+                 log_level,
                  *args,
                  params=None,
                  hop_conn_id='hop_default',
                  **kwargs):
         super().__init__(*args, **kwargs)
         self.workflow = workflow
-        self.hop_conn_id = hop_conn_id
+        self.project_name = project_name
+        self.log_level = log_level
         self.task_params = params
+        self.hop_conn_id = hop_conn_id
 
-    def execute(self, context: Context) -> Any:
-        pass  # TODO: Implement me
+    def __get_hop_client(self):
+        return HopHook(
+                self.project_name,
+                self.hop_conn_id,
+                self.log_level).get_conn()
+
+    def __get_work_name(self):
+        return self.workflow.split('/').pop()
+
+    def execute(self, context: Context) -> Any: # pylint: disable=unused-argument
+        conn = self.__get_hop_client()
+        register_rs = conn.register_workflow(self.workflow)
+        message = register_rs['webresult']['message']
+        work_id = register_rs['webresult']['id']
+        self.log.info(f'{self.workflow}: {message}')
+
+        start_rs = conn.start_workflow(self.__get_work_name(), work_id)
+        result = start_rs['webresult']['result']
+        self.log.info(f'{self.workflow}: Started {result}')
+
+        work_status_rs = None
+        status_desc = None
+        while not work_status_rs or status_desc not in self.END_STATUSES:
+            work_status_rs = conn.workflow_status(self.__get_work_name(), work_id)
+
+            status = work_status_rs['workflow-status']
+            status_desc = status['status_desc']
+            self.log.info(self.LOG_TEMPLATE, status_desc, self.workflow, work_id)
+            self._log_logging_string(status['logging_string'])
+
+            if status_desc not in self.END_STATUSES:
+                self.log.info('Sleeping 5 seconds before ask again')
+                time.sleep(5)
+
+        if 'error_desc' in status and status['error_desc']:
+            self.log.error(self.LOG_TEMPLATE, status['error_desc'], self.workflow, work_id)
+
+        if status_desc in self.ERROR_STATUSES:
+            self.log.error(self.LOG_TEMPLATE, status_desc, self.workflow, work_id)
+            raise AirflowException(status_desc)
 
 
 class HopPipelineOperator(HopBaseOperator):
     """Hop Pipeline Operator"""
-
-    LOG_TEMPLATE = '%s: %s, with id %s'
 
     template_fields = ('task_params',)
 
     def __init__(self,
                  pipeline,
                  project_name,
+                 pipeline_config,
                  log_level,
                  *args,
                  params=None,
@@ -83,6 +125,7 @@ class HopPipelineOperator(HopBaseOperator):
         super().__init__(*args, **kwargs)
         self.pipeline = pipeline
         self.project_name = project_name
+        self.pipeline_config = pipeline_config
         self.log_level = log_level
         self.hop_conn_id = hop_conn_id
         self.task_params = params
@@ -96,10 +139,10 @@ class HopPipelineOperator(HopBaseOperator):
     def __get_pipe_name(self):
         return self.pipeline.split('/').pop()
 
-    def execute(self, pipe_config, context: Context) -> Any: # pylint: disable=unused-argument
+    def execute(self, context: Context) -> Any: # pylint: disable=unused-argument
         conn = self.__get_hop_client()
 
-        register_rs = conn.register_pipeline(self.pipeline, pipe_config)
+        register_rs = conn.register_pipeline(self.pipeline, self.pipeline_config)
         message = register_rs['webresult']['message']
         pipe_id = register_rs['webresult']['id']
         self.log.info(f'{self.pipeline}: {message}')

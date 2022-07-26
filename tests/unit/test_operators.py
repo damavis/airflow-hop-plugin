@@ -113,9 +113,10 @@ class TestPipelineOperator(OperatorTestBase):
             task_id = 'test_pipeline_operator',
             pipeline = DEFAULT_PIPELINE,
             project_name = DEFAULT_PROJECT_NAME,
+            pipeline_config= DEFAULT_PIPE_CONFIG,
             log_level = DEFAULT_LOG_LEVEL)
 
-        op.execute(pipe_config = DEFAULT_PIPE_CONFIG, context = {})
+        op.execute(context = {})
         self.assertEqual('cae6cc35-f07a-4321-b211-bd884db655ac',
             mock_get.call_args_list[0][1]['params']['id'])
         self.assertEqual('get_param.hpl',mock_get.call_args_list[0][1]['params']['name'])
