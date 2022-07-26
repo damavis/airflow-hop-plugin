@@ -1,1 +1,104 @@
-{"server":[{"webAppName":"","sslConfig":null,"sslMode":false,"proxyPort":"8080","hostname":"localhost","password":"Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8","nonProxyHosts":"","overrideExistingProperties":false,"propertiesMasterName":null,"port":"8081","name":"Testing_server","proxyHostname":"127.0.0.1","username":"cluster"}],"pipeline-probe":[],"unit-test":[],"rdbms":[],"workflow-log":[],"cassandra-connection":[],"neo4j-graph-model":[],"web-service":[],"pipeline-run-configuration":[{"engineRunConfiguration":{"Remote":{"export_resources":true,"resources_target_folder":"","resources_source_folder":"","server_poll_interval":"","run_config":"local","hop_server":"Testing_server","server_poll_delay":""}},"configurationVariables":[],"name":"remote hop server","description":""},{"engineRunConfiguration":{"Local":{"feedback_size":"50000","wait_time":"20","sample_size":"100","sample_type_in_gui":"Last","rowset_size":"10000","safe_mode":false,"show_feedback":false,"topo_sort":false,"gather_metrics":false,"transactional":false}},"configurationVariables":[],"name":"local","description":""}],"neo4j-connection":[],"mongodb-connection":[],"partition":[],"async-web-service":[],"pipeline-log":[],"workflow-run-configuration":[{"engineRunConfiguration":{"Remote":{"export_resources":false,"resources_target_folder":"","resources_source_folder":"","run_config":"local","server_poll_interval":"","hop_server":"Testing_server","server_poll_delay":""}},"name":"remote hop server","description":""},{"engineRunConfiguration":{"Local":{"safe_mode":false,"transactional":false}},"name":"local","description":""}],"file-definition":[],"splunk":[],"dataset":[]}
+{
+    "server": [
+        {
+            "webAppName": "",
+            "sslConfig": null,
+            "sslMode": false,
+            "proxyPort": "8080",
+            "hostname": "localhost",
+            "password": "Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8",
+            "nonProxyHosts": "",
+            "overrideExistingProperties": false,
+            "propertiesMasterName": null,
+            "port": "8081",
+            "name": "Testing_server",
+            "proxyHostname": "127.0.0.1",
+            "username": "cluster"
+        }
+    ],
+    "pipeline-probe": [],
+    "unit-test": [],
+    "rdbms": [],
+    "workflow-log": [],
+    "cassandra-connection": [],
+    "neo4j-graph-model": [],
+    "web-service": [],
+    "pipeline-run-configuration": [
+        {
+            "engineRunConfiguration": {
+                "Remote": {
+                    "export_resources": true,
+                    "resources_target_folder": "",
+                    "resources_source_folder": "",
+                    "server_poll_interval": "",
+                    "run_config": "local",
+                    "hop_server": "Testing_server",
+                    "server_poll_delay": ""
+                }
+            },
+            "configurationVariables": [
+                {
+                    "name": "SERVERVAR",
+                    "description": "",
+                    "value": "1"
+                }
+            ],
+            "name": "remote hop server",
+            "description": ""
+        },
+        {
+            "engineRunConfiguration": {
+                "Local": {
+                    "feedback_size": "50000",
+                    "wait_time": "20",
+                    "sample_size": "100",
+                    "sample_type_in_gui": "Last",
+                    "rowset_size": "10000",
+                    "safe_mode": false,
+                    "show_feedback": false,
+                    "topo_sort": false,
+                    "gather_metrics": false,
+                    "transactional": false
+                }
+            },
+            "configurationVariables": [],
+            "name": "local",
+            "description": ""
+        }
+    ],
+    "neo4j-connection": [],
+    "mongodb-connection": [],
+    "partition": [],
+    "async-web-service": [],
+    "pipeline-log": [],
+    "workflow-run-configuration": [
+        {
+            "engineRunConfiguration": {
+                "Remote": {
+                    "export_resources": false,
+                    "resources_target_folder": "",
+                    "resources_source_folder": "",
+                    "run_config": "local",
+                    "server_poll_interval": "",
+                    "hop_server": "Testing_server",
+                    "server_poll_delay": ""
+                }
+            },
+            "name": "remote hop server",
+            "description": ""
+        },
+        {
+            "engineRunConfiguration": {
+                "Local": {
+                    "safe_mode": false,
+                    "transactional": false
+                }
+            },
+            "name": "local",
+            "description": ""
+        }
+    ],
+    "file-definition": [],
+    "splunk": [],
+    "dataset": []
+}
