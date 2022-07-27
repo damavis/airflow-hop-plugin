@@ -74,7 +74,7 @@ class HopWorkflowOperator(HopBaseOperator):
 
     def execute(self, context: Context) -> Any: # pylint: disable=unused-argument
         conn = self.__get_hop_client()
-        register_rs = conn.register_workflow(self.workflow)
+        register_rs = conn.register_workflow(self.workflow, self.task_params)
         message = register_rs['webresult']['message']
         work_id = register_rs['webresult']['id']
         self.log.info(f'{self.workflow}: {message}')
@@ -136,7 +136,7 @@ class HopPipelineOperator(HopBaseOperator):
     def execute(self, context: Context) -> Any: # pylint: disable=unused-argument
         conn = self.__get_hop_client()
 
-        register_rs = conn.register_pipeline(self.pipeline, self.pipe_config)
+        register_rs = conn.register_pipeline(self.pipeline, self.pipe_config, self.task_params)
         message = register_rs['webresult']['message']
         pipe_id = register_rs['webresult']['id']
         self.log.info(f'{self.pipeline}: {message}')
