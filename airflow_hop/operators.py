@@ -72,9 +72,6 @@ class HopWorkflowOperator(HopBaseOperator):
                 self.hop_conn_id,
                 self.log_level).get_conn()
 
-    def __get_work_name(self):
-        return self.workflow.split('/').pop()
-
     def execute(self, context: Context) -> Any: # pylint: disable=unused-argument
         conn = self.__get_hop_client()
         register_rs = conn.register_workflow(self.workflow)
@@ -82,14 +79,14 @@ class HopWorkflowOperator(HopBaseOperator):
         work_id = register_rs['webresult']['id']
         self.log.info(f'{self.workflow}: {message}')
 
-        start_rs = conn.start_workflow(self.__get_work_name(), work_id)
+        start_rs = conn.start_workflow(self.workflow, work_id)
         result = start_rs['webresult']['result']
         self.log.info(f'{self.workflow}: Started {result}')
 
         work_status_rs = None
         status_desc = None
         while not work_status_rs or status_desc not in self.END_STATUSES:
-            work_status_rs = conn.workflow_status(self.__get_work_name(), work_id)
+            work_status_rs = conn.workflow_status(self.workflow, work_id)
 
             status = work_status_rs['workflow-status']
             status_desc = status['status_desc']
