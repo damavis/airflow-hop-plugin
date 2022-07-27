@@ -15,25 +15,28 @@
 
 from airflow import AirflowException
 
-from airflow_hop.operators import HopPipelineOperator
+from airflow_hop.operators import HopPipelineOperator, HopWorkflowOperator
 from tests.operator_test_base import OperatorTestBase
 
+PROJECT = 'default'
+
+PIPELINE_ERR = 'whatever.hpl'
+PIPELINE_OK = 'pipelines/get_param.hpl'
+PIPELINE_CONFIGURATION = 'remote hop server'
+
+WORKFLOW_OK = 'workflows/workflowTest.hwf'
+WORKFLOW_ERR = 'whatever.hwf'
 
 class TestPipelineOperator(OperatorTestBase):
-    """Perform tests regarding operators"""
+    """Perform tests regarding pipeline operators"""
 
-    PROJECT = 'default'
-
-    PIPELINE_ERR = 'whatever.hpl'
-    PIPELINE_OK = '/pipelines/get_param.hpl'
-    PIPELINE_CONFIGURATION = 'remote hop server'
 
     def test_execute(self):
         op = HopPipelineOperator(
             task_id='test_pipeline_operator',
-            pipeline=self.PIPELINE_OK,
-            pipe_config=self.PIPELINE_CONFIGURATION,
-            project_name=self.PROJECT,
+            pipeline=PIPELINE_OK,
+            pipe_config=PIPELINE_CONFIGURATION,
+            project_name=PROJECT,
             log_level='Basic')
 
         try:
@@ -44,12 +47,39 @@ class TestPipelineOperator(OperatorTestBase):
     def test_execute_non_existent_pipeline(self):
         op = HopPipelineOperator(
             task_id = 'test_pipeline_operator',
-            pipeline = self.PIPELINE_ERR,
-            pipe_config=self.PIPELINE_CONFIGURATION,
-            project_name = self.PROJECT,
+            pipeline = PIPELINE_ERR,
+            pipe_config=PIPELINE_CONFIGURATION,
+            project_name = PROJECT,
             log_level = 'Basic')
 
         with self.assertRaises(AirflowException) as context:
             op.execute(context = {})
 
-        self.assertTrue(f'{self.PIPELINE_ERR} not found' in str(context.exception))
+        self.assertTrue(f'{PIPELINE_ERR} not found' in str(context.exception))
+
+class TestWorkflowOperator(OperatorTestBase):
+    """Perform tests regarding workflow operators"""
+
+    def test_execute(self):
+        op = HopWorkflowOperator(
+            task_id='test_workflow_operator',
+            workflow=WORKFLOW_OK,
+            project_name=PROJECT,
+            log_level='Basic')
+
+        try:
+            op.execute(context={})
+        except Exception as ex:
+            raise ex
+
+    def test_execute_non_existent_workflow(self):
+        op = HopWorkflowOperator(
+            task_id='test_workflow_operator',
+            workflow=WORKFLOW_ERR,
+            project_name=PROJECT,
+            log_level='Basic')
+
+        with self.assertRaises(AirflowException) as context:
+            op.execute(context = {})
+
+        self.assertTrue(f'{WORKFLOW_ERR} not found' in str(context.exception))

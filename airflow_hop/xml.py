@@ -69,7 +69,7 @@ class XMLBuilder:
             root.append(self.__generate_element('metastore_json', self.__generate_metastore()))
             return ElementTree.tostring(root, encoding='unicode')
         except FileNotFoundError as error:
-            raise AirflowException(f'ERROR: pipeline {workflow_path} not found') from error
+            raise AirflowException(f'ERROR: workflow {workflow_path} not found') from error
 
 
     def __get_workflow_execuion_config(self, workflow_path) -> Element:
