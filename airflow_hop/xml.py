@@ -60,7 +60,7 @@ class XMLBuilder:
         self.environment_vars = env_data['variables']
 
     def get_workflow_xml(self, workflow_name) -> str:
-        workflow_path = f'{self.project_folder}/{workflow_name}'
+        workflow_path = f'{self.project_folder}/workflows/{workflow_name}'
         root = Element('workflow_configuration')
         try:
             workflow = ElementTree.parse(workflow_path)
@@ -93,7 +93,7 @@ class XMLBuilder:
 
 
     def get_pipeline_xml(self, pipeline_name, pipeline_config) -> str:
-        pipeline_path = f'{self.project_folder}/{pipeline_name}'
+        pipeline_path = f'{self.project_folder}/pipelines/{pipeline_name}'
         root = Element('pipeline_configuration')
         try:
             pipeline = ElementTree.parse(pipeline_path)
