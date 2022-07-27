@@ -42,6 +42,7 @@ class XMLBuilder:
 
         project = next(item for item in config_data['projectsConfig']['projectConfigurations']
             if item['projectName'] == project_name)
+        self.project_home = project['projectHome']
         self.project_folder = f'{hop_home}/{project["projectHome"]}'
         self.metastore_file = f'{self.project_folder}/metadata.json'
 
@@ -155,6 +156,10 @@ class XMLBuilder:
             new_variable.append(self.__generate_element('name', variable['name']))
             new_variable.append(self.__generate_element('value', variable['value']))
             root.append(new_variable)
+
+        project_home = Element('variable')
+        project_home.append(self.__generate_element('name','PROJECT_HOME'))
+        project_home.append(self.__generate_element('value',self.project_home))
 
         jdk_debug = Element('variable')
         jdk_debug.append(self.__generate_element('name','jdk.debug'))
