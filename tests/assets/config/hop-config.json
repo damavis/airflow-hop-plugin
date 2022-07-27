@@ -269,7 +269,12 @@
       "projectHome" : "config/projects/samples",
       "configFilename" : "project-config.json"
     } ],
-    "lifecycleEnvironments" : [ ],
+    "lifecycleEnvironments" : [ {
+      "name" : "Dev",
+      "purpose" : "Development",
+      "projectName" : "default",
+      "configurationFiles" : [ "/home/pal7/hop/config/projects/dev.json" ]
+    } ],
     "projectLifecycles" : [ ]
   },
   "explorer-perspective" : {
