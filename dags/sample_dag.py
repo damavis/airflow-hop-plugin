@@ -21,13 +21,13 @@ with DAG('sample_dag', start_date=datetime(2022,7,26),
         pipe_config='remote hop server',
         project_name='default',
         log_level='Basic',
-        params={'date':'{{ ds }}'})
+        params={'DATE':'{{ ds }}'})
 
     work_test = HopWorkflowOperator(
         task_id='work_test',
         workflow='workflows/workflowTest.hwf',
         project_name='default',
         log_level='Basic',
-        params={'date':'{{ ds }}'})
+        params={'DATE':'{{ ds }}'})
 
     fake_users >> get_param >> work_test
