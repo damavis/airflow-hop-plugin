@@ -25,20 +25,19 @@ class TestPipelineOperator(OperatorTestBase):
     PROJECT = 'default'
 
     PIPELINE_ERR = 'whatever.hpl'
-    PIPELINE_OK = f'{OperatorTestBase.TESTS_PATH}/assets/config/projects/'\
-            'default/transforms/get_param.hpl'
-    PIPELINE_CONFIGURATION = f'{OperatorTestBase.TESTS_PATH}/assets/config/' \
-            'projects/default/metadata/pipeline-run-configuration/remote_hop_server.json'
+    PIPELINE_OK = '/pipelines/get_param.hpl'
+    PIPELINE_CONFIGURATION = 'remote hop server'
 
     def test_execute(self):
         op = HopPipelineOperator(
-            task_id = 'test_pipeline_operator',
-            pipeline = self.PIPELINE_OK,
-            project_name = self.PROJECT,
-            log_level = 'Basic')
+            task_id='test_pipeline_operator',
+            pipeline=self.PIPELINE_OK,
+            pipe_config=self.PIPELINE_CONFIGURATION,
+            project_name=self.PROJECT,
+            log_level='Basic')
 
         try:
-            op.execute(self.PIPELINE_CONFIGURATION,context = {})
+            op.execute(context = {})
         except Exception as ex:
             raise ex
 
@@ -46,10 +45,11 @@ class TestPipelineOperator(OperatorTestBase):
         op = HopPipelineOperator(
             task_id = 'test_pipeline_operator',
             pipeline = self.PIPELINE_ERR,
+            pipe_config=self.PIPELINE_CONFIGURATION,
             project_name = self.PROJECT,
             log_level = 'Basic')
 
         with self.assertRaises(AirflowException) as context:
-            op.execute(self.PIPELINE_CONFIGURATION,context = {})
+            op.execute(context = {})
 
-        self.assertTrue(f'ERROR: pipeline {self.PIPELINE_ERR} not found' in str(context.exception))
+        self.assertTrue(f'{self.PIPELINE_ERR} not found' in str(context.exception))
