@@ -138,7 +138,7 @@ class XMLBuilder:
             new_variable.append(self.__generate_element('name', parameter))
             new_variable.append(self.__generate_element('value',
                 self.task_params[parameter]))
-            pass
+            root.append(new_variable)
 
         for variable in self.global_variables:
             new_variable = Element('variable')

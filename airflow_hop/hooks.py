@@ -66,6 +66,7 @@ class HopHook(BaseHook):
             return HTTPBasicAuth(self.username,self.password)
 
         def register_pipeline(self, pipe_name, pipe_config, task_params):
+            print(task_params)
             xml_builder = XMLBuilder(
                             self.hop_home,
                             self.project_name,
