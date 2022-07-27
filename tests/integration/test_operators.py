@@ -37,7 +37,8 @@ class TestPipelineOperator(OperatorTestBase):
             pipeline=PIPELINE_OK,
             pipe_config=PIPELINE_CONFIGURATION,
             project_name=PROJECT,
-            log_level='Basic')
+            log_level='Basic',
+            params={'DATE':'{{ ds }}'})
 
         try:
             op.execute(context = {})
@@ -50,7 +51,8 @@ class TestPipelineOperator(OperatorTestBase):
             pipeline = PIPELINE_ERR,
             pipe_config=PIPELINE_CONFIGURATION,
             project_name = PROJECT,
-            log_level = 'Basic')
+            log_level = 'Basic',
+            params={'DATE':'{{ ds }}'})
 
         with self.assertRaises(AirflowException) as context:
             op.execute(context = {})
@@ -65,7 +67,8 @@ class TestWorkflowOperator(OperatorTestBase):
             task_id='test_workflow_operator',
             workflow=WORKFLOW_OK,
             project_name=PROJECT,
-            log_level='Basic')
+            log_level='Basic',
+            params={'DATE':'{{ ds }}'})
 
         try:
             op.execute(context={})
@@ -77,7 +80,8 @@ class TestWorkflowOperator(OperatorTestBase):
             task_id='test_workflow_operator',
             workflow=WORKFLOW_ERR,
             project_name=PROJECT,
-            log_level='Basic')
+            log_level='Basic',
+            params={'DATE':'{{ ds }}'})
 
         with self.assertRaises(AirflowException) as context:
             op.execute(context = {})
