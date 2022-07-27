@@ -25,7 +25,7 @@ class TestPipelineOperator(OperatorTestBase):
     PROJECT = 'default'
 
     PIPELINE_ERR = 'whatever.hpl'
-    PIPELINE_OK = 'get_param.hpl'
+    PIPELINE_OK = '/pipelines/get_param.hpl'
     PIPELINE_CONFIGURATION = 'remote hop server'
 
     def test_execute(self):

@@ -29,8 +29,8 @@ DEFAULT_LOG_LEVEL = 'Basic'
 DEFAULT_HOP_HOME = f'{TestBase.TESTS_PATH}/assets'
 DEFAULT_PROJECT_NAME = 'default'
 DEFAULT_PIPE_CONFIG_NAME = 'remote hop server'
-DEFAULT_PIPELINE_NAME = 'get_param.hpl'
-DEFAULT_WORKFLOW_NAME = 'workflowTest.hwf'
+DEFAULT_PIPELINE_NAME = 'pipelines/get_param.hpl'
+DEFAULT_WORKFLOW_NAME = 'workflows/workflowTest.hwf'
 
 class TestHopHook(TestCase):
     """

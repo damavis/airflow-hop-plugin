@@ -20,7 +20,7 @@ from tests.operator_test_base import OperatorTestBase
 
 DEFAULT_LOG_LEVEL = 'Basic'
 DEFAULT_PROJECT_NAME = 'default'
-DEFAULT_PIPELINE_NAME = 'get_param.hpl'
+DEFAULT_PIPELINE_NAME = '/pipelines/get_param.hpl'
 DEFAULT_PIPELINE_CONFIG = 'remote hop server'
 
 class MockedPipelineRespone:
@@ -116,5 +116,5 @@ class TestPipelineOperator(OperatorTestBase):
         op.execute(context = {})
         self.assertEqual('cae6cc35-f07a-4321-b211-bd884db655ac',
             mock_get.call_args_list[0][1]['params']['id'])
-        self.assertEqual('get_param.hpl',mock_get.call_args_list[0][1]['params']['name'])
+        self.assertEqual(DEFAULT_PIPELINE_NAME,mock_get.call_args_list[0][1]['params']['name'])
         self.assertEqual('Y',mock_get.call_args_list[0][1]['params']['xml'])
