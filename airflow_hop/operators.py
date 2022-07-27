@@ -74,6 +74,7 @@ class HopPipelineOperator(HopBaseOperator):
 
     def __init__(self,
                  pipeline,
+                 pipe_config,
                  project_name,
                  log_level,
                  *args,
@@ -82,6 +83,7 @@ class HopPipelineOperator(HopBaseOperator):
                  **kwargs):
         super().__init__(*args, **kwargs)
         self.pipeline = pipeline
+        self.pipe_config = pipe_config
         self.project_name = project_name
         self.log_level = log_level
         self.hop_conn_id = hop_conn_id
@@ -93,29 +95,26 @@ class HopPipelineOperator(HopBaseOperator):
                 self.hop_conn_id,
                 self.log_level).get_conn()
 
-    def __get_pipe_name(self):
-        return self.pipeline.split('/').pop()
-
-    def execute(self, pipe_config, context: Context) -> Any: # pylint: disable=unused-argument
+    def execute(self, context: Context) -> Any: # pylint: disable=unused-argument
         conn = self.__get_hop_client()
 
-        register_rs = conn.register_pipeline(self.pipeline, pipe_config)
+        register_rs = conn.register_pipeline(self.pipeline, self.pipe_config)
         message = register_rs['webresult']['message']
         pipe_id = register_rs['webresult']['id']
         self.log.info(f'{self.pipeline}: {message}')
 
-        prepare_exec_rs = conn.prepare_pipeline_exec(self.__get_pipe_name(), pipe_id)
+        prepare_exec_rs = conn.prepare_pipeline_exec(self.pipeline, pipe_id)
         result = prepare_exec_rs['webresult']['result']
         self.log.info(f'{self.pipeline}: Prepared {result}')
 
-        start_exec_rs = conn.start_pipeline_execution(self.__get_pipe_name(), pipe_id)
+        start_exec_rs = conn.start_pipeline_execution(self.pipeline, pipe_id)
         result = start_exec_rs['webresult']['result']
         self.log.info(f'{self.pipeline}: Started {result}')
 
         pipe_status_rs = None
         status_desc = None
         while not pipe_status_rs or status_desc not in self.END_STATUSES:
-            pipe_status_rs = conn.pipeline_status(self.__get_pipe_name(), pipe_id)
+            pipe_status_rs = conn.pipeline_status(self.pipeline, pipe_id)
 
             status = pipe_status_rs['pipeline-status']
             status_desc = status['status_desc']

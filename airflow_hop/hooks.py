@@ -49,17 +49,15 @@ class HopHook(BaseHook):
                 username,
                 password,
                 log_level,
-                hop_config_path,
+                hop_home,
                 project_name):
             self.host = host
             self.port = port
             self.username = username
             self.password = password
             self.log_level = log_level
-            self.metastore_file = f'{hop_config_path}/projects/{project_name}/metadata.json'
-            self.hop_config_file = f'{hop_config_path}/hop-config.json'
-            self.project_config_file = f'{hop_config_path}/projects/' \
-                                       f'{project_name}/project-config.json'
+            self.hop_home = hop_home
+            self.project_name = project_name
 
         def __get_url(self,endpoint):
             return f'http://{self.host}:{self.port}{endpoint}'
@@ -67,12 +65,11 @@ class HopHook(BaseHook):
         def __get_auth(self):
             return HTTPBasicAuth(self.username,self.password)
 
-        def register_pipeline(self, pipe_file, pipe_config):
+        def register_pipeline(self, pipe_name, pipe_config):
             xml_builder = XMLBuilder(
-                            self.metastore_file,
-                            self.hop_config_file,
-                            self.project_config_file)
-            data = xml_builder.get_pipeline_xml(pipe_file, pipe_config)
+                            self.hop_home,
+                            self.project_name)
+            data = xml_builder.get_pipeline_xml(pipe_name, pipe_config)
             parameters = {'xml':'Y'}
             response = requests.post(url=self.__get_url(self.REGISTER_PIPELINE),
                                     params=parameters,auth=self.__get_auth(),
@@ -139,12 +136,11 @@ class HopHook(BaseHook):
                 return xmltodict.parse(response.content)
 
 
-        def register_workflow(self, workflow_file):
+        def register_workflow(self, workflow_name):
             xml_builder = XMLBuilder(
-                                self.metastore_file,
-                                self.hop_config_file,
-                                self.project_config_file)
-            data = xml_builder.get_workflow_xml(workflow_file)
+                                self.hop_home,
+                                self.project_name)
+            data = xml_builder.get_workflow_xml(workflow_name)
             parameters = {'xml':'Y'}
             response = requests.post(url=self.__get_url(self.REGISTER_WORKFLOW),
                                     params=parameters,auth=self.__get_auth(),
@@ -223,6 +219,6 @@ class HopHook(BaseHook):
             username = self.connection.login,
             password = self.connection.password,
             log_level = self.log_level,
-            hop_config_path = self.extras.get('config_path'),
+            hop_home = self.extras.get('hop_home'),
             project_name = self.project_name)
         return self.hop_client

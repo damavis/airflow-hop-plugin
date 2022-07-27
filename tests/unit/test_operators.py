@@ -20,11 +20,8 @@ from tests.operator_test_base import OperatorTestBase
 
 DEFAULT_LOG_LEVEL = 'Basic'
 DEFAULT_PROJECT_NAME = 'default'
-DEFAULT_PIPELINE_NAME = 'get_param.hpl'
-DEFAULT_PIPELINE = f'tests/assets/config/projects/{DEFAULT_PROJECT_NAME}' \
-            f'/transforms/{DEFAULT_PIPELINE_NAME}'
-DEFAULT_PIPE_CONFIG = f'tests/assets/config/projects/{DEFAULT_PROJECT_NAME}' \
-            f'/metadata/pipeline-run-configuration/remote_hop_server.json'
+DEFAULT_PIPELINE_NAME = '/pipelines/get_param.hpl'
+DEFAULT_PIPELINE_CONFIG = 'remote hop server'
 
 class MockedPipelineRespone:
     """Create mocked responses"""
@@ -110,13 +107,14 @@ class TestPipelineOperator(OperatorTestBase):
     @mock.patch('requests.post', side_effect = mock_requests)
     def test_execute(self, mock_post, mock_get): # pylint: disable=unused-argument
         op = HopPipelineOperator(
-            task_id = 'test_pipeline_operator',
-            pipeline = DEFAULT_PIPELINE,
-            project_name = DEFAULT_PROJECT_NAME,
-            log_level = DEFAULT_LOG_LEVEL)
+            task_id='test_pipeline_operator',
+            pipeline=DEFAULT_PIPELINE_NAME,
+            pipe_config= DEFAULT_PIPELINE_CONFIG,
+            project_name=DEFAULT_PROJECT_NAME,
+            log_level=DEFAULT_LOG_LEVEL)
 
-        op.execute(pipe_config = DEFAULT_PIPE_CONFIG, context = {})
+        op.execute(context = {})
         self.assertEqual('cae6cc35-f07a-4321-b211-bd884db655ac',
             mock_get.call_args_list[0][1]['params']['id'])
-        self.assertEqual('get_param.hpl',mock_get.call_args_list[0][1]['params']['name'])
+        self.assertEqual(DEFAULT_PIPELINE_NAME,mock_get.call_args_list[0][1]['params']['name'])
         self.assertEqual('Y',mock_get.call_args_list[0][1]['params']['xml'])
