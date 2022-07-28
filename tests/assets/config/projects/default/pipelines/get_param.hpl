@@ -63,6 +63,18 @@
         <precision>-1</precision>
         <trim_type>none</trim_type>
       </field>
+      <field>
+        <name>DS</name>
+        <variable>${DATE}</variable>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+      </field>
     </fields>
     <attributes/>
     <GUI>
@@ -87,7 +99,13 @@
     <limitRowsNumber>0</limitRowsNumber>
     <logmessage/>
     <fields>
-      </fields>
+      <field>
+        <name>PARAMTEST</name>
+      </field>
+      <field>
+        <name>DS</name>
+      </field>
+    </fields>
     <attributes/>
     <GUI>
       <xloc>464</xloc>

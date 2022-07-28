@@ -65,10 +65,11 @@ class HopHook(BaseHook):
         def __get_auth(self):
             return HTTPBasicAuth(self.username,self.password)
 
-        def register_pipeline(self, pipe_name, pipe_config):
+        def register_pipeline(self, pipe_name, pipe_config, task_params):
             xml_builder = XMLBuilder(
                             self.hop_home,
-                            self.project_name)
+                            self.project_name,
+                            task_params)
             data = xml_builder.get_pipeline_xml(pipe_name, pipe_config)
             parameters = {'xml':'Y'}
             response = requests.post(url=self.__get_url(self.REGISTER_PIPELINE),
@@ -136,10 +137,11 @@ class HopHook(BaseHook):
                 return xmltodict.parse(response.content)
 
 
-        def register_workflow(self, workflow_name):
+        def register_workflow(self, workflow_name, task_params):
             xml_builder = XMLBuilder(
                                 self.hop_home,
-                                self.project_name)
+                                self.project_name,
+                                task_params)
             data = xml_builder.get_workflow_xml(workflow_name)
             parameters = {'xml':'Y'}
             response = requests.post(url=self.__get_url(self.REGISTER_WORKFLOW),

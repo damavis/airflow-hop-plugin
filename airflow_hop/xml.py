@@ -34,7 +34,9 @@ class XMLBuilder:
                 self,
                 hop_home,
                 project_name,
+                task_params,
                 environment_name = None):
+
         with open(f'{hop_home}/config/hop-config.json', encoding='utf-8') as file:
             config_data = json.load(file)
 
@@ -49,6 +51,11 @@ class XMLBuilder:
         with open(f'{self.project_folder}/{project["configFilename"]}') as file:
             project_data = json.load(file)
         self.project_variables = project_data['config']['variables']
+
+        if task_params is None:
+            self.task_params = []
+        else:
+            self.task_params = task_params
 
         if environment_name is None:
             self.environment_vars = []
@@ -69,7 +76,7 @@ class XMLBuilder:
             root.append(self.__generate_element('metastore_json', self.__generate_metastore()))
             return ElementTree.tostring(root, encoding='unicode')
         except FileNotFoundError as error:
-            raise AirflowException(f'ERROR: pipeline {workflow_path} not found') from error
+            raise AirflowException(f'ERROR: workflow {workflow_path} not found') from error
 
 
     def __get_workflow_execuion_config(self, workflow_path) -> Element:
@@ -125,6 +132,14 @@ class XMLBuilder:
 
     def __get_variables(self, pipeline_config = None) -> Element:
         root = Element('variables')
+
+        for parameter in self.task_params:
+            new_variable = Element('variable')
+            new_variable.append(self.__generate_element('name', parameter))
+            new_variable.append(self.__generate_element('value',
+                self.task_params[parameter]))
+            root.append(new_variable)
+
         for variable in self.global_variables:
             new_variable = Element('variable')
             new_variable.append(self.__generate_element('name', variable['name']))
