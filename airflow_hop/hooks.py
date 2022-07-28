@@ -65,7 +65,7 @@ class HopHook(BaseHook):
         def __get_auth(self):
             return HTTPBasicAuth(self.username,self.password)
 
-        def register_pipeline(self, pipe_name, pipe_config, task_params):
+        def register_pipeline(self, pipe_name, pipe_config, task_params = None):
             xml_builder = XMLBuilder(
                             self.hop_home,
                             self.project_name,
@@ -137,7 +137,7 @@ class HopHook(BaseHook):
                 return xmltodict.parse(response.content)
 
 
-        def register_workflow(self, workflow_name, task_params):
+        def register_workflow(self, workflow_name, task_params = None):
             xml_builder = XMLBuilder(
                                 self.hop_home,
                                 self.project_name,

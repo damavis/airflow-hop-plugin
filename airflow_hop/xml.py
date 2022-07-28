@@ -72,14 +72,14 @@ class XMLBuilder:
         try:
             workflow = ElementTree.parse(workflow_path)
             root.append(workflow.getroot())
-            root.append(self.__get_workflow_execuion_config(workflow_path))
+            root.append(self.__get_workflow_execution_config(workflow_path))
             root.append(self.__generate_element('metastore_json', self.__generate_metastore()))
             return ElementTree.tostring(root, encoding='unicode')
         except FileNotFoundError as error:
             raise AirflowException(f'ERROR: workflow {workflow_path} not found') from error
 
 
-    def __get_workflow_execuion_config(self, workflow_path) -> Element:
+    def __get_workflow_execution_config(self, workflow_path) -> Element:
         root = Element('workflow_execution_configuration')
         root.append(self.__get_workflow_parameters(workflow_path))
         root.append(self.__get_variables())
