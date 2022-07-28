@@ -57,14 +57,15 @@ class XMLBuilder:
         else:
             self.task_params = task_params
 
-        if environment_name is None:
-            self.environment_vars = []
-            return
+        self.environment_vars = []
+        if environment_name is None: return
+
         env = next(item for item in config_data['projectsConfig']['lifecycleEnvironments']
             if item['name'] == environment_name)
-        with open(f'{hop_home}/{env["configurationFiles"]}', encoding='utf-8') as file:
-            env_data = json.load(file)
-        self.environment_vars = env_data['variables']
+        for env_file in env['configurationFiles']:
+            with open(f'{hop_home}/{env_file}', encoding='utf-8') as file:
+                env_data = json.load(file)
+            self.environment_vars = self.environment_vars + env_data['variables']
 
     def get_workflow_xml(self, workflow_name) -> str:
         workflow_path = f'{self.project_folder}/{workflow_name}'
@@ -110,6 +111,9 @@ class XMLBuilder:
             return ElementTree.tostring(root, encoding='unicode')
         except FileNotFoundError as error:
             raise AirflowException(f'ERROR: pipeline {pipeline_path} not found') from error
+        except StopIteration as error:
+            raise AirflowException(f'ERROR: pipeline configuration {pipeline_config}'\
+                ' not found') from error
 
     def __get_pipeline_execution_config(self, pipeline_config, pipeline_file) -> Element:
         root = Element('pipeline_execution_configuration')
