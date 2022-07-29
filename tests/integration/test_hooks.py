@@ -153,7 +153,7 @@ class TestHopHook(TestCase):
             time.sleep(SLEEP_TIME)
         self.assertTrue('result' in result['workflow-status'])
 
-    def test_run_pipeline_with_error(self):
+    def test_run_pipeline_with_http_error(self):
         client = self.__get_error_client()
         with self.assertRaises(AirflowException) as context:
             client.register_pipeline(DEFAULT_PIPELINE_NAME, DEFAULT_PIPE_CONFIG_NAME)
@@ -175,7 +175,7 @@ class TestHopHook(TestCase):
             client.stop_pipeline_execution(DEFAULT_PIPELINE_NAME, FAKE_PIPE_ID)
         self.assertTrue('Error 401' in str(context.exception))
 
-    def test_run_workflow_with_error(self):
+    def test_run_workflow_with_http_error(self):
         client = self.__get_error_client()
         with self.assertRaises(AirflowException) as context:
             client.register_workflow(DEFAULT_WORKFLOW_NAME)
@@ -192,3 +192,33 @@ class TestHopHook(TestCase):
         with self.assertRaises(AirflowException) as context:
             client.stop_workflow(DEFAULT_WORKFLOW_NAME, FAKE_WORKFLOW_ID)
         self.assertTrue('Error 401' in str(context.exception))
+
+    def test_pipeline_with_hop_error(self):
+        client = self.__get_client()
+
+        with self.assertRaises(AirflowException) as context:
+            client.prepare_pipeline_exec(DEFAULT_PIPELINE_NAME, FAKE_PIPE_ID)
+        self.assertTrue('ERROR' in str(context.exception))
+
+        with self.assertRaises(AirflowException) as context:
+            client.start_pipeline_execution(DEFAULT_PIPELINE_NAME, FAKE_PIPE_ID)
+        self.assertTrue('ERROR' in str(context.exception))
+
+        with self.assertRaises(AirflowException) as context:
+            client.pipeline_status(DEFAULT_PIPELINE_NAME, FAKE_PIPE_ID)
+        self.assertTrue('ERROR' in str(context.exception))
+
+    def test_workflow_with_hop_error(self):
+        client = self.__get_client()
+
+        with self.assertRaises(AirflowException) as context:
+            client.start_workflow(DEFAULT_WORKFLOW_NAME, FAKE_WORKFLOW_ID)
+        self.assertTrue('ERROR' in str(context.exception))
+
+        with self.assertRaises(AirflowException) as context:
+            client.workflow_status(DEFAULT_WORKFLOW_NAME, FAKE_WORKFLOW_ID)
+        self.assertTrue('ERROR' in str(context.exception))
+
+        with self.assertRaises(AirflowException) as context:
+            client.stop_workflow(DEFAULT_WORKFLOW_NAME, FAKE_WORKFLOW_ID)
+        self.assertTrue('ERROR' in str(context.exception))

@@ -83,8 +83,13 @@ class HopHook(BaseHook):
                 data = BeautifulSoup(response.content, 'html.parser')
                 error = data.find('title').text
                 raise AirflowException('{}: {}'.format('HTTP',error))
-            else:
-                return xmltodict.parse(response.content)
+
+            result = xmltodict.parse(response.content)
+            if 'ERROR' in result['webresult']['result']:
+                raise AirflowException('{}: {}'.format(
+                    result['webresult']['result'],
+                    result['webresult']['message']))
+            return xmltodict.parse(response.content)
 
         def pipeline_status(self, pipe_name, pipe_id):
             parameters = {'name':pipe_name, 'id':pipe_id,'xml':'Y'}
@@ -94,8 +99,13 @@ class HopHook(BaseHook):
                 data = BeautifulSoup(response.content, 'html.parser')
                 error = data.find('title').text
                 raise AirflowException('{}: {}'.format('HTTP',error))
-            else:
-                return xmltodict.parse(response.content)
+
+            result = xmltodict.parse(response.content)
+            if 'webresult' in result:
+                raise AirflowException('{}: {}'.format(
+                    result['webresult']['result'],
+                    result['webresult']['message']))
+            return result
 
         def prepare_pipeline_exec(self, pipe_name, pipe_id):
             parameters = {'name':pipe_name, 'id':pipe_id,'xml':'Y'}
@@ -105,8 +115,13 @@ class HopHook(BaseHook):
                 data = BeautifulSoup(response.content, 'html.parser')
                 error = data.find('title').text
                 raise AirflowException('{}: {}'.format('HTTP',error))
-            else:
-                return xmltodict.parse(response.content)
+
+            result = xmltodict.parse(response.content)
+            if 'ERROR' in result['webresult']['result']:
+                raise AirflowException('{}: {}'.format(
+                    result['webresult']['result'],
+                    result['webresult']['message']))
+            return xmltodict.parse(response.content)
 
         def start_pipeline_execution(self, pipe_name, pipe_id):
             parameters = {'name':pipe_name, 'id':pipe_id,'xml':'Y'}
@@ -116,8 +131,13 @@ class HopHook(BaseHook):
                 data = BeautifulSoup(response.content, 'html.parser')
                 error = data.find('title').text
                 raise AirflowException('{}: {}'.format('HTTP',error))
-            else:
-                return xmltodict.parse(response.content)
+
+            result = xmltodict.parse(response.content)
+            if 'ERROR' in result['webresult']['result']:
+                raise AirflowException('{}: {}'.format(
+                    result['webresult']['result'],
+                    result['webresult']['message']))
+            return xmltodict.parse(response.content)
 
         def stop_pipeline_execution(self, pipe_name, pipe_id):
             parameters = {'name':pipe_name, 'id':pipe_id,'xml':'Y'}
@@ -127,8 +147,13 @@ class HopHook(BaseHook):
                 data = BeautifulSoup(response.content, 'html.parser')
                 error = data.find('title').text
                 raise AirflowException('{}: {}'.format('HTTP',error))
-            else:
-                return xmltodict.parse(response.content)
+
+            result = xmltodict.parse(response.content)
+            if 'ERROR' in result['webresult']['result']:
+                raise AirflowException('{}: {}'.format(
+                    result['webresult']['result'],
+                    result['webresult']['message']))
+            return xmltodict.parse(response.content)
 
 
         def register_workflow(self, workflow_name, task_params = None):
@@ -147,8 +172,13 @@ class HopHook(BaseHook):
                 data = BeautifulSoup(response.content, 'html.parser')
                 error = data.find('title').text
                 raise AirflowException('{}: {}'.format('HTTP',error))
-            else:
-                return xmltodict.parse(response.content)
+
+            result = xmltodict.parse(response.content)
+            if 'ERROR' in result['webresult']['result']:
+                raise AirflowException('{}: {}'.format(
+                    result['webresult']['result'],
+                    result['webresult']['message']))
+            return xmltodict.parse(response.content)
 
         def workflow_status(self, workflow_name, workflow_id):
             parameters = {'name':workflow_name, 'id':workflow_id,'xml':'Y'}
@@ -159,8 +189,13 @@ class HopHook(BaseHook):
                 data = BeautifulSoup(response.content, 'html.parser')
                 error = data.find('title').text
                 raise AirflowException('{}: {}'.format('HTTP',error))
-            else:
-                return xmltodict.parse(response.content)
+
+            result = xmltodict.parse(response.content)
+            if 'webresult' in result:
+                raise AirflowException('{}: {}'.format(
+                    result['webresult']['result'],
+                    result['webresult']['message']))
+            return result
 
         def start_workflow(self, workflow_name, workflow_id):
             parameters = {'name':workflow_name, 'id':workflow_id, 'xml':'Y'}
@@ -171,8 +206,13 @@ class HopHook(BaseHook):
                 data = BeautifulSoup(response.content, 'html.parser')
                 error = data.find('title').text
                 raise AirflowException('{}: {}'.format('HTTP',error))
-            else:
-                return xmltodict.parse(response.content)
+
+            result = xmltodict.parse(response.content)
+            if 'ERROR' in result['webresult']['result']:
+                raise AirflowException('{}: {}'.format(
+                    result['webresult']['result'],
+                    result['webresult']['message']))
+            return xmltodict.parse(response.content)
 
         def stop_workflow(self, workflow_name, workflow_id):
             parameters = {'name':workflow_name, 'id':workflow_id,'xml':'Y'}
@@ -183,8 +223,13 @@ class HopHook(BaseHook):
                 data = BeautifulSoup(response.content, 'html.parser')
                 error = data.find('title').text
                 raise AirflowException('{}: {}'.format('HTTP',error))
-            else:
-                return xmltodict.parse(response.content)
+
+            result = xmltodict.parse(response.content)
+            if 'ERROR' in result['webresult']['result']:
+                raise AirflowException('{}: {}'.format(
+                    result['webresult']['result'],
+                    result['webresult']['message']))
+            return xmltodict.parse(response.content)
 
 
     def __init__(
