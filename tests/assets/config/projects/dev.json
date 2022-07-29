@@ -1,0 +1,7 @@
+{
+  "variables" : [ {
+    "name" : "VARTEST",
+    "value" : "420",
+    "description" : "Whatever"
+  } ]
+}

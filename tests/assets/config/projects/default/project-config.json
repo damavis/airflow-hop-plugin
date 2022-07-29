@@ -5,9 +5,9 @@
   "enforcingExecutionInHome" : true,
   "config" : {
     "variables" : [ {
-      "name" : "TESTINGVAR3",
-      "value" : "69",
-      "description" : "AAAAAAAAAAAAAAa"
+      "name" : "TESTING_VARIABLE",
+      "value" : "42",
+      "description" : "This is a simple Test"
     } ]
   }
 }

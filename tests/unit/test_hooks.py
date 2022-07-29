@@ -25,6 +25,9 @@ DEFAULT_LOG_LEVEL = 'Basic'
 DEFAULT_HOP_HOME = 'home/user/hop'
 DEFAULT_PROJECT_NAME = 'default'
 
+DEFAULT_ENVIRONMENT = 'Dev'
+
+
 class TestHopHook(TestCase):
     """
     Perform tests regarding Hooks
@@ -38,9 +41,11 @@ class TestHopHook(TestCase):
                                     DEFAULT_PASSWORD,
                                     DEFAULT_LOG_LEVEL,
                                     DEFAULT_HOP_HOME,
-                                    DEFAULT_PROJECT_NAME)
+                                    DEFAULT_PROJECT_NAME,
+                                    DEFAULT_ENVIRONMENT)
         self.assertEqual(client.host, DEFAULT_HOST)
         self.assertEqual(client.port, DEFAULT_PORT)
         self.assertEqual(client.username, DEFAULT_USERNAME)
         self.assertEqual(client.password, DEFAULT_PASSWORD)
         self.assertEqual(client.log_level, DEFAULT_LOG_LEVEL)
+        self.assertEqual(client.environment, DEFAULT_ENVIRONMENT)
