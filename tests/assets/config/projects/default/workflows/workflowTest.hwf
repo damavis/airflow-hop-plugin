@@ -70,7 +70,19 @@
         </parameter>
       </parameters>
       <parallel>N</parallel>
-      <xloc>368</xloc>
+      <xloc>464</xloc>
+      <yloc>64</yloc>
+      <attributes_hac/>
+    </action>
+    <action>
+      <name>Wait for</name>
+      <description/>
+      <type>DELAY</type>
+      <attributes/>
+      <maximumTimeout>2</maximumTimeout>
+      <scaletime>0</scaletime>
+      <parallel>N</parallel>
+      <xloc>304</xloc>
       <yloc>64</yloc>
       <attributes_hac/>
     </action>
@@ -78,10 +90,17 @@
   <hops>
     <hop>
       <from>Start</from>
-      <to>fake-data-generate-person-record.hpl</to>
+      <to>Wait for</to>
       <enabled>Y</enabled>
       <evaluation>Y</evaluation>
       <unconditional>Y</unconditional>
+    </hop>
+    <hop>
+      <from>Wait for</from>
+      <to>fake-data-generate-person-record.hpl</to>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>N</unconditional>
     </hop>
   </hops>
   <notepads>
