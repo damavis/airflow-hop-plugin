@@ -95,9 +95,9 @@ To correctly use the operators you must create a new [Airflow connection](https:
 - Password: your_password
 - Host: your_host
 - Port: your_port
-- Extra: "hop_home": "path_to_your_home_home_directory"
+- Extra: "hop_home": "path_to_your_hop_home_directory"
 
- Example of a new Airflow connection from the CLI:
+ Example of a new Airflow connection using Airflow's CLI:
 ```
 airflow connections add 'hop_default' \
     --conn-json '{
