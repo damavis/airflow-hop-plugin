@@ -8,6 +8,13 @@ Before setting up the plugin you must have the following Hop metadata created:
 - A remote pipeline configuration
 - A remote workflow configuration
 
+To do so, go to the metadata window by pressing Ctrl+Shift+M or clicking the following icon on the left side bar:
+
+![Metadata button](images/Metadata_button.png)
+
+Now you see all the metadata within your project, and to create a new one just right click over the type that you want to create and select the "New" option.
+![Create Metadata](images/Create_metadata.png)
+
 Here are some images showing how these should look like in the Hop UI:
 
 ![Hop Server](images/Hop_server.png) <br>
@@ -17,18 +24,18 @@ Here are some images showing how these should look like in the Hop UI:
 ## Set up guide
 The following content will be a "how to set up the plugin" guide plus some requirements and restraints when it comes to its usage.
 
-### 1. Install the plugin
-The first step in order to get this plugin working is to install the package using the following command:
-```
-python -m pip install git+https://github.com/damavis/airflow-hop-plugin.git@b1ed765c7d52e195b26e45c4a721a47f448aa6ab
-```
-
-### 2. Generate metadata.json
+### 1. Generate metadata.json
 For the correct configuration of this plugin a file containing all Hop's metadata must be created inside each project directory. This can be done by exporting it from Hop UI.
 
 Please note that this process must be repeated each time the metadata of a project is modified.
 
 ![Metadata option](images/Export_metadata.png)
+
+### 2. Install the plugin
+The first step in order to get this plugin working is to install the package using the following command:
+```
+python -m pip install git+https://github.com/damavis/airflow-hop-plugin.git@b1ed765c7d52e195b26e45c4a721a47f448aa6ab
+```
 
 ### 3. Hop Directory Structure
 Due to some technical limitations it's really important for the Hop home directory to have the following structure.
