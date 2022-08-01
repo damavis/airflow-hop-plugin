@@ -2,6 +2,18 @@
 
 This is an Apache Hop plugin for Apache Airflow in order to orchestrate Apache Hop pipelines and workflows from Airflow.
 
+## Requirements
+Before setting up the plugin you must have the following Hop metadata created:
+- A Hop Server
+- A remote pipeline configuration
+- A remote workflow configuration
+
+Here are some images showing how these should look like in the Hop UI:
+
+![Hop Server](images/Hop_server.png) <br>
+![Remote pipeline Config](images/Pipeline_Run_config.png) <br>
+![Remote workflow config](images/Workflow_Run_config.png) <br>
+
 ## Set up guide
 The following content will be a "how to set up the plugin" guide plus some requirements and restraints when it comes to its usage.
 
@@ -16,7 +28,7 @@ For the correct configuration of this plugin a file containing all Hop's metadat
 
 Please note that this process must be repeated each time the metadata of a project is modified.
 
-![Here goes an image showing the option](images/Export_metadata.png)
+![Metadata option](images/Export_metadata.png)
 
 ### 3. Hop Directory Structure
 Due to some technical limitations it's really important for the Hop home directory to have the following structure.
