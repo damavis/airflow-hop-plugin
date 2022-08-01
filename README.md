@@ -115,10 +115,8 @@ It's important to point out that both the workflow and pipeline parameters withi
 
 ## Development
 
-### Create a Docker Hop Server
+### Deploy Apache Hop Server using Docker
 (For this [Docker](https://docs.docker.com/engine/install/) must be downloaded)
-
-To correctly execute Hop workflows and pipelines you should use a Hop Server.
 
 If you want to use Docker to create the server you can use the following docker-compose configuration as a template:
 ```yaml
