@@ -1,4 +1,4 @@
-# Airflow-Hop plugin
+# Hop Airflow plugin
 
 This is an Apache Hop plugin for Apache Airflow in order to orchestrate Apache Hop pipelines and workflows from Airflow.
 
@@ -6,7 +6,7 @@ This is an Apache Hop plugin for Apache Airflow in order to orchestrate Apache H
 The following content will be a "how to set up the plugin" guide plus some requirements and restraints when it comes to its usage.
 
 ### 1. Install the plugin
-The first step in order to get this plugin working is to install the repository using the following command:
+The first step in order to get this plugin working is to install the package using the following command:
 ```
 python -m pip install git+https://github.com/damavis/airflow-hop-plugin.git@b1ed765c7d52e195b26e45c4a721a47f448aa6ab
 ```
@@ -116,7 +116,9 @@ It's important to point out that both the workflow and pipeline parameters withi
 ## Development
 
 ### Deploy Apache Hop Server using Docker
-(For this [Docker](https://docs.docker.com/engine/install/) must be downloaded)
+Requeriments:
+- [docker](https://docs.docker.com/engine/install/)
+- [docker-compose](https://docs.docker.com/compose/install/)
 
 If you want to use Docker to create the server you can use the following docker-compose configuration as a template:
 ```yaml
@@ -124,13 +126,13 @@ services:
   apache-hop:
     image: apache/hop:latest
     ports:
-      - port:port
+      - 8080:8080
     volumes:
       - hop_path:/home/hop
     environment:
-      HOP_SERVER_USER: username
-      HOP_SERVER_PASS: password
-      HOP_SERVER_PORT: port
-      HOP_SERVER_HOSTNAME: hostname
+      HOP_SERVER_USER: cluster
+      HOP_SERVER_PASS: cluster
+      HOP_SERVER_PORT: 8080
+      HOP_SERVER_HOSTNAME: 0.0.0.0
 ```
 Once done, the Hop server can be started using docker compose.
