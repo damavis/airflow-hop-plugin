@@ -6,7 +6,7 @@ This is an Apache Hop pluguin for Apache Airfow in ordred to orquestate Apache H
 The following content will be a how to set up the plugin plus some requirements and restraints when it comes to its usage.
 
 ### 1. Install the plugin
-The first step in order to get this plugin working is to download the repository using the following command:
+The first step in order to get this plugin working is to install the repository using the following command:
 ```
 python -m pip install git+https://github.com/damavis/airflow-hop-plugin.git@b1ed765c7d52e195b26e45c4a721a47f448aa6ab
 ```
@@ -84,7 +84,7 @@ with DAG('sample_dag', start_date=datetime(2022,7,26),
     first_pipe >> second_pipe >> work_test
 ```
 
-It's important to point out that both the workflow and pipeline parameters must be a relative path parting from the project's directory.
+It's important to point out that both the workflow and pipeline parameters within their respective operators must be a relative path parting from the project's directory.
 
 ### 5. Create an Airflow Connection
 To correctly use the operators you must create a new [Airflow connection](https://airflow.apache.org/docs/apache-airflow/stable/howto/connection.html). There are multiple ways to do so and whichever you want can be used, but it should have these values for the following attributes:
