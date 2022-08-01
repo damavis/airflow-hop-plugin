@@ -1,9 +1,9 @@
 # Airflow-Hop plugin
 
-This is an Apache Hop pluguin for Apache Airfow in ordred to orquestate Apache Hop pipelines and workflows from Airflow.
+This is an Apache Hop plugin for Apache Airflow in order to orchestrate Apache Hop pipelines and workflows from Airflow.
 
 ## Set up guide
-The following content will be a how to set up the plugin plus some requirements and restraints when it comes to its usage.
+The following content will be a "how to set up the plugin" guide plus some requirements and restraints when it comes to its usage.
 
 ### 1. Install the plugin
 The first step in order to get this plugin working is to install the repository using the following command:
@@ -12,14 +12,14 @@ python -m pip install git+https://github.com/damavis/airflow-hop-plugin.git@b1ed
 ```
 
 ### 2. Generate metadata.json
-For the correct configuration of this plugin a file containing all Hop's metadata must be created inside the project's directory. This can be done by exporting it from Hop itself.
+For the correct configuration of this plugin a file containing all Hop's metadata must be created inside each project directory. This can be done by exporting it from Hop UI.
 
 Please note that this process must be repeated each time the metadata of a project is modified.
 
 ![Here goes an image showing the option](images/Export_metadata.png)
 
 ### 3. Hop Directory Structure
-It's really important for the Hop home directory to have the following structure.
+Due to some technical limitations it's really important for the Hop home directory to have the following structure.
 ```
 hop # This is the hop home directory
 ├── ...
@@ -40,11 +40,38 @@ hop # This is the hop home directory
 ├── ...
 ```
 
-Moreover, please remember to save all projects inside the "projects" directroy and set a path relative to the hop home directory when configuring them like shown in the following picture:
+Moreover, please remember to save all projects inside the "projects" directory and set a path relative to the hop home directory when configuring them like shown in the following picture:
 
 ![Here goes an image](images/project_properties.png)
 
-### 4. Creating a DAG
+### 4. Create an Airflow Connection
+To correctly use the operators you must create a new [Airflow connection](https://airflow.apache.org/docs/apache-airflow/stable/howto/connection.html). There are multiple ways to do so and whichever you want can be used, but it should have these values for the following attributes:
+
+- Connection ID: 'hop_default'
+- Connection Type: 'http'
+- Login: apache_hop_username
+- Password: apache_hop_password
+- Host: apache_hop_server
+- Port: apache_hop_port
+- Extra: "hop_home": "/path/to/hop-home/"
+
+ Example of a new Airflow connection using Airflow's CLI:
+```
+airflow connections add 'hop_default' \
+    --conn-json '{
+        "conn_type": "http",
+        "login": "cluster",
+        "password": "cluster",
+        "host": "0.0.0.0",
+        "port": 8080,
+        "schema": "",
+        "extra": {
+            "hop_home": "/home/user/hop"
+        }
+    }'
+```
+
+### 5. Creating a DAG
 Here's an example of a DAG:
 
 ```python
@@ -85,33 +112,6 @@ with DAG('sample_dag', start_date=datetime(2022,7,26),
 ```
 
 It's important to point out that both the workflow and pipeline parameters within their respective operators must be a relative path parting from the project's directory.
-
-### 5. Create an Airflow Connection
-To correctly use the operators you must create a new [Airflow connection](https://airflow.apache.org/docs/apache-airflow/stable/howto/connection.html). There are multiple ways to do so and whichever you want can be used, but it should have these values for the following attributes:
-
-- Connection ID: 'hop_default'
-- Connection Type: 'hop'
-- Login: your_login
-- Password: your_password
-- Host: your_host
-- Port: your_port
-- Extra: "hop_home": "path_to_your_hop_home_directory"
-
- Example of a new Airflow connection using Airflow's CLI:
-```
-airflow connections add 'hop_default' \
-    --conn-json '{
-        "conn_type": "hop",
-        "login": "login",
-        "password": "password",
-        "host": "example_host",
-        "port": port,
-        "schema": "",
-        "extra": {
-            "hop_home": "/home/user/hop"
-        }
-    }'
-```
 
 ## Development
 
