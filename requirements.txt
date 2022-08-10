@@ -3,6 +3,7 @@ apache-airflow-providers-sqlite==2.0.1
 xmltodict
 sqlalchemy<1.4,>=1.3.18
 setuptools-git-version
+beautifulsoup4
 
 # dev
 pytest
