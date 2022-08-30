@@ -1,3 +1,8 @@
+[![Build Status](https://api.travis-ci.com/damavis/airflow-hop-plugin.svg?branch=main)](https://app.travis-ci.com/damavis/airflow-hop-plugin)
+[![codecov](https://codecov.io/gh/damavis/airflow-hop-plugin/branch/main/graph/badge.svg?token=IRE2T3NEOD)](https://codecov.io/gh/damavis/airflow-hop-plugin)
+[![PyPI](https://img.shields.io/pypi/v/airflow-hop-plugin)](https://pypi.org/project/airflow-hop-plugin/)
+[![PyPI - Downloads](https://img.shields.io/pypi/dm/airflow-hop-plugin)](https://pypi.org/project/airflow-hop-plugin/)
+
 # Hop Airflow plugin
 
 This is an Apache Hop plugin for Apache Airflow in order to orchestrate Apache Hop pipelines and workflows from Airflow.
@@ -44,7 +49,7 @@ The first step in order to get this plugin working is to install the package usi
 command:
 
 ```
-python -m pip install git+https://github.com/damavis/airflow-hop-plugin.git@b1ed765c7d52e195b26e45c4a721a47f448aa6ab
+pip install airflow-hop-plugin
 ```
 
 ### 3. Hop Directory Structure
