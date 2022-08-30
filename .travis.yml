@@ -8,9 +8,6 @@ python:
 #  - "3.6"
 #  - "3.7"
 
-before_install:
-  - sudo mv docker-compose
-
 install:
   - pip install pip --upgrade
   - pip install -r requirements.txt
