@@ -1,0 +1,34 @@
+language: python
+
+dist: focal
+
+python:
+  - "3.8"
+  - "3.9"
+#  - "3.6"
+#  - "3.7"
+
+install:
+  - pip install pip --upgrade
+  - pip install -r requirements.txt
+  - pip install pre-commit
+  - airflow db init
+
+script:
+  - pre-commit run --all-files
+  - pip install .  # Check package setup
+
+jobs:
+  include:
+    - stage: deploy
+      python: 3.8
+      deploy:
+        provider: pypi
+        user: "__token__"
+        password: ${TWINE_PASSWORD}
+        on:
+          branch: master
+          tags: true
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
