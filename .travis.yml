@@ -22,7 +22,7 @@ install:
 
 script:
   - pre-commit run --all-files
-  - docker-compose up
+  - docker-compose up -d
   - python -m unittest discover tests/integration/
   - pip install .  # Check package setup
 
