@@ -21,6 +21,7 @@ import xmltodict
 from requests.auth import HTTPBasicAuth
 from airflow_hop.xml import XMLBuilder
 
+
 class HopHook(BaseHook):
     """
     Implementation hook to interact with Hop REST API
@@ -42,7 +43,6 @@ class HopHook(BaseHook):
         START_WORKFLOW = '/hop/startWorkflow/'
         STOP_WORKFLOW = '/hop/stopWorkflow/'
 
-
         def __init__(
                 self,
                 host,
@@ -62,45 +62,45 @@ class HopHook(BaseHook):
             self.project_name = project_name
             self.environment = environment
 
-        def __get_url(self,endpoint):
+        def __get_url(self, endpoint):
             return f'http://{self.host}:{self.port}{endpoint}'
 
         def __get_auth(self):
-            return HTTPBasicAuth(self.username,self.password)
+            return HTTPBasicAuth(self.username, self.password)
 
-        def register_pipeline(self, pipe_name, pipe_config, task_params = None):
+        def register_pipeline(self, pipe_name, pipe_config, task_params=None):
             xml_builder = XMLBuilder(
-                            self.hop_home,
-                            self.project_name,
-                            task_params,
-                            self.environment)
+                self.hop_home,
+                self.project_name,
+                task_params,
+                self.environment)
             data = xml_builder.get_pipeline_xml(pipe_name, pipe_config)
-            parameters = {'xml':'Y'}
+            parameters = {'xml': 'Y'}
             response = requests.post(url=self.__get_url(self.REGISTER_PIPELINE),
-                                    params=parameters,auth=self.__get_auth(),
-                                    data=data)
+                                     params=parameters, auth=self.__get_auth(),
+                                     data=data)
             if response.status_code >= 400:
-                data = BeautifulSoup(response.content, 'html.parser')
+                data = BeautifulSoup(response.text, 'html.parser')
                 error = data.find('title').text
-                raise AirflowException('{}: {}'.format('HTTP',error))
+                raise AirflowException('{}: {}'.format('HTTP', error))
 
-            result = xmltodict.parse(response.content)
+            result = xmltodict.parse(response.text)
             if 'ERROR' in result['webresult']['result']:
                 raise AirflowException('{}: {}'.format(
                     result['webresult']['result'],
                     result['webresult']['message']))
-            return xmltodict.parse(response.content)
+            return xmltodict.parse(response.text)
 
         def pipeline_status(self, pipe_name, pipe_id):
-            parameters = {'name':pipe_name, 'id':pipe_id,'xml':'Y'}
+            parameters = {'name': pipe_name, 'id': pipe_id, 'xml': 'Y'}
             response = requests.get(url=self.__get_url(self.PIPELINE_STATUS),
                                     params=parameters, auth=self.__get_auth())
             if response.status_code >= 400:
-                data = BeautifulSoup(response.content, 'html.parser')
+                data = BeautifulSoup(response.text, 'html.parser')
                 error = data.find('title').text
-                raise AirflowException('{}: {}'.format('HTTP',error))
+                raise AirflowException('{}: {}'.format('HTTP', error))
 
-            result = xmltodict.parse(response.content)
+            result = xmltodict.parse(response.text)
             if 'webresult' in result:
                 raise AirflowException('{}: {}'.format(
                     result['webresult']['result'],
@@ -108,89 +108,88 @@ class HopHook(BaseHook):
             return result
 
         def prepare_pipeline_exec(self, pipe_name, pipe_id):
-            parameters = {'name':pipe_name, 'id':pipe_id,'xml':'Y'}
+            parameters = {'name': pipe_name, 'id': pipe_id, 'xml': 'Y'}
             response = requests.get(url=self.__get_url(self.PREPARE_PIPELINE_EXEC),
                                     params=parameters, auth=self.__get_auth())
             if response.status_code >= 400:
-                data = BeautifulSoup(response.content, 'html.parser')
+                data = BeautifulSoup(response.text, 'html.parser')
                 error = data.find('title').text
-                raise AirflowException('{}: {}'.format('HTTP',error))
+                raise AirflowException('{}: {}'.format('HTTP', error))
 
-            result = xmltodict.parse(response.content)
+            result = xmltodict.parse(response.text)
             if 'ERROR' in result['webresult']['result']:
                 raise AirflowException('{}: {}'.format(
                     result['webresult']['result'],
                     result['webresult']['message']))
-            return xmltodict.parse(response.content)
+            return xmltodict.parse(response.text)
 
         def start_pipeline_execution(self, pipe_name, pipe_id):
-            parameters = {'name':pipe_name, 'id':pipe_id,'xml':'Y'}
-            response = requests.get(url = self.__get_url(self.START_PIPELINE_EXEC),
-                                    params = parameters, auth = self.__get_auth())
+            parameters = {'name': pipe_name, 'id': pipe_id, 'xml': 'Y'}
+            response = requests.get(url=self.__get_url(self.START_PIPELINE_EXEC),
+                                    params=parameters, auth=self.__get_auth())
             if response.status_code >= 400:
-                data = BeautifulSoup(response.content, 'html.parser')
+                data = BeautifulSoup(response.text, 'html.parser')
                 error = data.find('title').text
-                raise AirflowException('{}: {}'.format('HTTP',error))
+                raise AirflowException('{}: {}'.format('HTTP', error))
 
-            result = xmltodict.parse(response.content)
+            result = xmltodict.parse(response.text)
             if 'ERROR' in result['webresult']['result']:
                 raise AirflowException('{}: {}'.format(
                     result['webresult']['result'],
                     result['webresult']['message']))
-            return xmltodict.parse(response.content)
+            return xmltodict.parse(response.text)
 
         def stop_pipeline_execution(self, pipe_name, pipe_id):
-            parameters = {'name':pipe_name, 'id':pipe_id,'xml':'Y'}
+            parameters = {'name': pipe_name, 'id': pipe_id, 'xml': 'Y'}
             response = requests.get(url=self.__get_url(self.STOP_PIPELINE_EXEC),
                                     params=parameters, auth=self.__get_auth())
             if response.status_code >= 400:
-                data = BeautifulSoup(response.content, 'html.parser')
+                data = BeautifulSoup(response.text, 'html.parser')
                 error = data.find('title').text
-                raise AirflowException('{}: {}'.format('HTTP',error))
+                raise AirflowException('{}: {}'.format('HTTP', error))
 
-            result = xmltodict.parse(response.content)
+            result = xmltodict.parse(response.text)
             if 'ERROR' in result['webresult']['result']:
                 raise AirflowException('{}: {}'.format(
                     result['webresult']['result'],
                     result['webresult']['message']))
-            return xmltodict.parse(response.content)
+            return xmltodict.parse(response.text)
 
-
-        def register_workflow(self, workflow_name, task_params = None):
+        def register_workflow(self, workflow_name, task_params=None):
             xml_builder = XMLBuilder(
-                                self.hop_home,
-                                self.project_name,
-                                task_params,
-                                self.environment)
+                self.hop_home,
+                self.project_name,
+                task_params,
+                self.environment)
             data = xml_builder.get_workflow_xml(workflow_name)
-            parameters = {'xml':'Y'}
+            parameters = {'xml': 'Y'}
             response = requests.post(url=self.__get_url(self.REGISTER_WORKFLOW),
-                                    params=parameters,auth=self.__get_auth(),
-                                    data=data,
-                                    )
+                                     params=parameters, auth=self.__get_auth(),
+                                     data=data,
+                                     )
             if response.status_code >= 400:
-                data = BeautifulSoup(response.content, 'html.parser')
+                data = BeautifulSoup(response.text, 'html.parser')
                 error = data.find('title').text
-                raise AirflowException('{}: {}'.format('HTTP',error))
+                raise AirflowException('{}: {}'.format('HTTP', error))
 
-            result = xmltodict.parse(response.content)
+            result = xmltodict.parse(response.text)
             if 'ERROR' in result['webresult']['result']:
                 raise AirflowException('{}: {}'.format(
                     result['webresult']['result'],
                     result['webresult']['message']))
-            return xmltodict.parse(response.content)
+            return xmltodict.parse(response.text)
 
         def workflow_status(self, workflow_name, workflow_id):
-            parameters = {'name':workflow_name, 'id':workflow_id,'xml':'Y'}
+            parameters = {'name': workflow_name, 'id': workflow_id, 'xml': 'Y'}
             response = requests.get(url=self.__get_url(self.WORKFLOW_STATUS),
                                     params=parameters, auth=self.__get_auth(),
                                     )
             if response.status_code >= 400:
-                data = BeautifulSoup(response.content, 'html.parser')
+                data = BeautifulSoup(response.text, 'html.parser')
                 error = data.find('title').text
-                raise AirflowException('{}: {}'.format('HTTP',error))
+                raise AirflowException('{}: {}'.format('HTTP', error))
 
-            result = xmltodict.parse(response.content)
+            result = xmltodict.parse(response.text)
             if 'webresult' in result:
                 raise AirflowException('{}: {}'.format(
                     result['webresult']['result'],
@@ -198,46 +197,45 @@ class HopHook(BaseHook):
             return result
 
         def start_workflow(self, workflow_name, workflow_id):
-            parameters = {'name':workflow_name, 'id':workflow_id, 'xml':'Y'}
+            parameters = {'name': workflow_name, 'id': workflow_id, 'xml': 'Y'}
             response = requests.get(url=self.__get_url(self.START_WORKFLOW),
                                     params=parameters, auth=self.__get_auth(),
                                     )
             if response.status_code >= 400:
-                data = BeautifulSoup(response.content, 'html.parser')
+                data = BeautifulSoup(response.text, 'html.parser')
                 error = data.find('title').text
-                raise AirflowException('{}: {}'.format('HTTP',error))
+                raise AirflowException('{}: {}'.format('HTTP', error))
 
-            result = xmltodict.parse(response.content)
+            result = xmltodict.parse(response.text)
             if 'ERROR' in result['webresult']['result']:
                 raise AirflowException('{}: {}'.format(
                     result['webresult']['result'],
                     result['webresult']['message']))
-            return xmltodict.parse(response.content)
+            return xmltodict.parse(response.text)
 
         def stop_workflow(self, workflow_name, workflow_id):
-            parameters = {'name':workflow_name, 'id':workflow_id,'xml':'Y'}
+            parameters = {'name': workflow_name, 'id': workflow_id, 'xml': 'Y'}
             response = requests.get(url=self.__get_url(self.STOP_WORKFLOW),
                                     params=parameters, auth=self.__get_auth(),
                                     )
             if response.status_code >= 400:
-                data = BeautifulSoup(response.content, 'html.parser')
+                data = BeautifulSoup(response.text, 'html.parser')
                 error = data.find('title').text
-                raise AirflowException('{}: {}'.format('HTTP',error))
+                raise AirflowException('{}: {}'.format('HTTP', error))
 
-            result = xmltodict.parse(response.content)
+            result = xmltodict.parse(response.text)
             if 'ERROR' in result['webresult']['result']:
                 raise AirflowException('{}: {}'.format(
                     result['webresult']['result'],
                     result['webresult']['message']))
-            return xmltodict.parse(response.content)
-
+            return xmltodict.parse(response.text)
 
     def __init__(
             self,
             project_name,
             environment_name,
-            conn_id = 'hop_default',
-            log_level = 'Basic'):
+            conn_id='hop_default',
+            log_level='Basic'):
         """Hop Hook constructor to initialize the object."""
 
         self.conn_id = conn_id
