@@ -27,8 +27,8 @@ DEFAULT_PIPELINE_CONFIG = 'remote hop server'
 class MockedResponse:
     """Create mocked responses"""
 
-    def __init__(self, content, status_code):
-        self.content = content
+    def __init__(self, text, status_code):
+        self.text = text
         self.status_code = status_code
 
 
