@@ -67,7 +67,7 @@ class XMLBuilder:
                 env_data = json.load(file)
             self.environment_vars = self.environment_vars + env_data['variables']
 
-    def get_workflow_xml(self, workflow_name) -> str:
+    def get_workflow_xml(self, workflow_name) -> bytes:
         workflow_path = f'{self.project_folder}/{workflow_name}'
         root = Element('workflow_configuration')
         try:
@@ -75,7 +75,7 @@ class XMLBuilder:
             root.append(workflow.getroot())
             root.append(self.__get_workflow_execution_config(workflow_path))
             root.append(self.__generate_element('metastore_json', self.__generate_metastore()))
-            return ElementTree.tostring(root, encoding='unicode')
+            return ElementTree.tostring(root, encoding='utf-8')
         except FileNotFoundError as error:
             raise AirflowException(f'ERROR: workflow {workflow_path} not found') from error
 
@@ -100,7 +100,7 @@ class XMLBuilder:
         return root
 
 
-    def get_pipeline_xml(self, pipeline_name, pipeline_config) -> str:
+    def get_pipeline_xml(self, pipeline_name, pipeline_config) -> bytes:
         pipeline_path = f'{self.project_folder}/{pipeline_name}'
         root = Element('pipeline_configuration')
         try:
@@ -108,7 +108,7 @@ class XMLBuilder:
             root.append(pipeline.getroot())
             root.append(self.__get_pipeline_execution_config(pipeline_config, pipeline_path))
             root.append(self.__generate_element('metastore_json', self.__generate_metastore()))
-            return ElementTree.tostring(root, encoding='unicode')
+            return ElementTree.tostring(root, encoding='utf-8')
         except FileNotFoundError as error:
             raise AirflowException(f'ERROR: pipeline {pipeline_path} not found') from error
         except StopIteration as error:
