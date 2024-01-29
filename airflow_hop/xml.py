@@ -51,7 +51,7 @@ class XMLBuilder:
 
         metadata_path = f'{self.project_path}/metadata'
         
-        self.metastore_file = f'{project_path}/metadata.json'
+        self.metastore_file = f'{metadata_path}/metadata.json'
 
         with open(f'{project_path}/{project["configFilename"]}') as file:
             project_data = json.load(file)
