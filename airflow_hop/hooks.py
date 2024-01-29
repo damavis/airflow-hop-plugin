@@ -49,18 +49,22 @@ class HopHook(BaseHook):
                 port,
                 username,
                 password,
-                log_level,
-                hop_home,
+                project_path,
                 project_name,
-                environment):
+                environment_name,
+                environment_path,
+                hop_config_path,
+                log_level):
             self.host = host
             self.port = port
             self.username = username
             self.password = password
-            self.log_level = log_level
-            self.hop_home = hop_home
+            self.project_path = project_path
             self.project_name = project_name
-            self.environment = environment
+            self.environment_path = environment_path
+            self.environment_name = environment_name
+            self.hop_config_path = hop_config_path
+            self.log_level = log_level
 
         def __get_url(self, endpoint):
             return f'http://{self.host}:{self.port}{endpoint}'
@@ -70,10 +74,12 @@ class HopHook(BaseHook):
 
         def register_pipeline(self, pipe_name, pipe_config, task_params=None):
             xml_builder = XMLBuilder(
-                self.hop_home,
+                self.project_path,
                 self.project_name,
-                task_params,
-                self.environment)
+                self.environment_path,
+                self.environment_name,
+                self.hop_config_path,
+                task_params)
             data = xml_builder.get_pipeline_xml(pipe_name, pipe_config)
             parameters = {'xml': 'Y'}
             response = requests.post(url=self.__get_url(self.REGISTER_PIPELINE),
@@ -157,10 +163,12 @@ class HopHook(BaseHook):
 
         def register_workflow(self, workflow_name, task_params=None):
             xml_builder = XMLBuilder(
-                self.hop_home,
+                self.project_path,
                 self.project_name,
-                task_params,
-                self.environment)
+                self.environment_path,
+                self.environment_name,
+                self.hop_config_path,
+                task_params)
             data = xml_builder.get_workflow_xml(workflow_name)
             parameters = {'xml': 'Y'}
             response = requests.post(url=self.__get_url(self.REGISTER_WORKFLOW),
@@ -232,8 +240,11 @@ class HopHook(BaseHook):
 
     def __init__(
             self,
+            project_path,
             project_name,
+            environment_path,
             environment_name,
+            hop_config_path,
             conn_id='hop_default',
             log_level='Basic'):
         """Hop Hook constructor to initialize the object."""
@@ -241,11 +252,14 @@ class HopHook(BaseHook):
         self.conn_id = conn_id
         self.connection = self.get_connection(conn_id)
         self.extras = self.connection.extra_dejson
-        self.log_level = log_level
         self.extras = self.connection.extra_dejson
+        self.project_path = project_path
         self.project_name = project_name
+        self.environment_path = environment_path
+        self.environment_name = environment_name
+        self.hop_config_path = hop_config_path
+        self.log_level = log_level
         self.hop_client = None
-        self.environment = environment_name
 
     def get_conn(self) -> HopServerConnection:
         if self.hop_client:
@@ -256,8 +270,10 @@ class HopHook(BaseHook):
             port=self.connection.port,
             username=self.connection.login,
             password=self.connection.password,
-            log_level=self.log_level,
-            hop_home=self.extras.get('hop_home'),
+            project_path=self.project_path,
             project_name=self.project_name,
-            environment=self.environment)
+            environment_name=self.environment_name,
+            environment_path=self.environment_path,
+            hop_config_path=self.hop_config_path,
+            log_level=self.log_level)
         return self.hop_client
