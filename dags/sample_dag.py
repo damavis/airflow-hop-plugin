@@ -40,7 +40,11 @@ with DAG('sample_dag', start_date=datetime(2022,7,26),
     work_test = HopWorkflowOperator(
         task_id='work_test',
         workflow='workflows/workflowTest.hwf',
-        project_name='default',
+        project_path='/opt/projects/default',
+        project_name='hop_repo',
+        environment_path='/opt/projects/default/env',
+        environment_name='hop-repo-prd',
+        hop_config_path='/opt/config',
         log_level='Basic',
         params={'DATE':'{{ ds }}'})
 
