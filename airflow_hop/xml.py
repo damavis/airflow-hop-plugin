@@ -185,6 +185,7 @@ class XMLBuilder:
         project_home = Element('variable')
         project_home.append(self.__generate_element('name','PROJECT_HOME'))
         project_home.append(self.__generate_element('value',self.project_path))
+        root.append(project_home)
 
         jdk_debug = Element('variable')
         jdk_debug.append(self.__generate_element('name','jdk.debug'))
