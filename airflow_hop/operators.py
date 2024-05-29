@@ -57,14 +57,14 @@ class HopWorkflowOperator(HopBaseOperator):
                  log_level,
                  *args,
                  environment=None,
-                 params=None,
+                 hop_params=None,
                  hop_conn_id='hop_default',
                  **kwargs):
         super().__init__(*args, **kwargs)
         self.workflow = workflow
         self.project_name = project_name
         self.log_level = log_level
-        self.task_params = params
+        self.task_params = hop_params
         self.hop_conn_id = hop_conn_id
         self.environment = environment
 
@@ -120,7 +120,7 @@ class HopPipelineOperator(HopBaseOperator):
                  log_level,
                  *args,
                  environment=None,
-                 params=None,
+                 hop_params=None,
                  hop_conn_id='hop_default',
                  **kwargs):
         super().__init__(*args, **kwargs)
@@ -129,7 +129,7 @@ class HopPipelineOperator(HopBaseOperator):
         self.project_name = project_name
         self.log_level = log_level
         self.hop_conn_id = hop_conn_id
-        self.task_params = params
+        self.task_params = hop_params
         self.environment = environment
 
     def __get_hop_client(self):
