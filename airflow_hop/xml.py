@@ -46,14 +46,14 @@ class XMLBuilder:
             if item['projectName'] == project_name)
         self.project_home = project['projectHome']
         self.project_folder = f'{hop_home}/{project["projectHome"]}'
-        self.metastore_file = f'{self.project_folder}/default_metadata.json'
+        self.metastore_file = f'{self.project_folder}/metadata.json'
 
         with open(f'{self.project_folder}/{project["configFilename"]}') as file:
             project_data = json.load(file)
         self.project_variables = project_data['config']['variables']
 
         if task_params is None:
-            self.task_params = {}
+            self.task_params = []
         else:
             self.task_params = task_params
 
@@ -75,7 +75,6 @@ class XMLBuilder:
             root.append(workflow.getroot())
             root.append(self.__get_workflow_execution_config(workflow_path))
             root.append(self.__generate_element('metastore_json', self.__generate_metastore()))
-            print(ElementTree.tostring(root, encoding='utf-8'))
             return ElementTree.tostring(root, encoding='utf-8')
         except FileNotFoundError as error:
             raise AirflowException(f'ERROR: workflow {workflow_path} not found') from error
