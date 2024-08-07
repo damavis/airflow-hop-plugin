@@ -46,14 +46,14 @@ class XMLBuilder:
             if item['projectName'] == project_name)
         self.project_home = project['projectHome']
         self.project_folder = f'{hop_home}/{project["projectHome"]}'
-        self.metastore_file = f'{self.project_folder}/metadata.json'
+        self.metastore_file = f'{self.project_folder}/default_metadata.json'
 
         with open(f'{self.project_folder}/{project["configFilename"]}') as file:
             project_data = json.load(file)
         self.project_variables = project_data['config']['variables']
 
         if task_params is None:
-            self.task_params = []
+            self.task_params = {}
         else:
             self.task_params = task_params
 
@@ -75,6 +75,7 @@ class XMLBuilder:
             root.append(workflow.getroot())
             root.append(self.__get_workflow_execution_config(workflow_path))
             root.append(self.__generate_element('metastore_json', self.__generate_metastore()))
+            print(ElementTree.tostring(root, encoding='utf-8'))
             return ElementTree.tostring(root, encoding='utf-8')
         except FileNotFoundError as error:
             raise AirflowException(f'ERROR: workflow {workflow_path} not found') from error
@@ -92,11 +93,27 @@ class XMLBuilder:
         tree_root = tree.getroot()
         parameters = tree_root.findall('parameters')
         root = Element('parameters')
+       
+        task_param_names = set(self.task_params.keys())
+
+        # Add existing parameters from the workflow
         for parameter in parameters[0]:
-            new_param = Element('parameter')
-            new_param.append(self.__generate_element('name',parameter[0].text))
-            new_param.append(self.__generate_element('value',parameter[1].text))
-            root.append(new_param)
+            param_name = parameter[0].text
+            
+            if param_name not in task_param_names:
+                new_param = Element('parameter')
+                new_param.append(self.__generate_element('name', parameter[0].text))
+                new_param.append(self.__generate_element('value', parameter[1].text))
+                root.append(new_param)
+        
+        # Add task parameters
+        for parameter in self.task_params:
+            new_parameter = Element('parameter')
+            new_parameter.append(self.__generate_element('name', parameter))
+            new_parameter.append(self.__generate_element('value',
+                self.task_params[parameter]))
+            root.append(new_parameter)
+
         return root
 
 
@@ -127,22 +144,31 @@ class XMLBuilder:
         tree_root = tree.getroot()
         parameters = tree_root[0].findall('parameters')
         root = Element('parameters')
+        
+        task_param_names = set(self.task_params.keys())
+
+        # Add existing parameters from the workflow
         for parameter in parameters[0]:
-            new_param = Element('parameter')
-            new_param.append(self.__generate_element('name',parameter[0].text))
-            new_param.append(self.__generate_element('value',parameter[1].text))
-            root.append(new_param)
+            param_name = parameter[0].text
+            
+            if param_name not in task_param_names:
+                new_param = Element('parameter')
+                new_param.append(self.__generate_element('name', parameter[0].text))
+                new_param.append(self.__generate_element('value', parameter[1].text))
+                root.append(new_param)
+        
+        # Add task parameters
+        for parameter in self.task_params:
+            new_parameter = Element('parameter')
+            new_parameter.append(self.__generate_element('name', parameter))
+            new_parameter.append(self.__generate_element('value',
+                self.task_params[parameter]))
+            root.append(new_parameter)
+
         return root
 
     def __get_variables(self, pipeline_config = None) -> Element:
         root = Element('variables')
-
-        for parameter in self.task_params:
-            new_variable = Element('variable')
-            new_variable.append(self.__generate_element('name', parameter))
-            new_variable.append(self.__generate_element('value',
-                self.task_params[parameter]))
-            root.append(new_variable)
 
         for variable in self.global_variables:
             new_variable = Element('variable')
