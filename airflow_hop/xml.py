@@ -146,7 +146,7 @@ class XMLBuilder:
         
         task_param_names = set(self.task_params.keys())
 
-        # Add existing parameters from the workflow
+        # Add existing parameters from the pipeline
         for parameter in parameters[0]:
             param_name = parameter[0].text
             
