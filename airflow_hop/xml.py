@@ -19,7 +19,7 @@ import json
 from xml.etree import ElementTree
 from xml.etree.ElementTree import Element
 
-from airflow import AirflowException
+from airflow.exceptions import AirflowException
 
 class XMLBuilder:
     """
@@ -32,23 +32,28 @@ class XMLBuilder:
 
     def __init__(
                 self,
-                hop_home,
+                project_path,
                 project_name,
-                task_params,
-                environment_name = None):
+                environment_path,
+                environment_name,
+                hop_config_path,
+                task_params):
 
-        with open(f'{hop_home}/config/hop-config.json', encoding='utf-8') as file:
+        self.project_path = project_path
+
+        with open(f'{hop_config_path}/hop-config.json', encoding='utf-8') as file:
             config_data = json.load(file)
 
         self.global_variables = config_data['variables']
 
         project = next(item for item in config_data['projectsConfig']['projectConfigurations']
             if item['projectName'] == project_name)
-        self.project_home = project['projectHome']
-        self.project_folder = f'{hop_home}/{project["projectHome"]}'
-        self.metastore_file = f'{self.project_folder}/metadata.json'
 
-        with open(f'{self.project_folder}/{project["configFilename"]}') as file:
+        metadata_path = f'{self.project_path}/metadata'
+        
+        self.metastore_file = f'{metadata_path}/metadata.json'
+
+        with open(f'{project_path}/{project["configFilename"]}') as file:
             project_data = json.load(file)
         self.project_variables = project_data['config']['variables']
 
@@ -63,12 +68,13 @@ class XMLBuilder:
         env = next(item for item in config_data['projectsConfig']['lifecycleEnvironments']
             if item['name'] == environment_name)
         for env_file in env['configurationFiles']:
-            with open(f'{hop_home}/{env_file}', encoding='utf-8') as file:
+            env_file = env_file.split('/')[-1]
+            with open(f'{environment_path}/{env_file}', encoding='utf-8') as file:
                 env_data = json.load(file)
             self.environment_vars = self.environment_vars + env_data['variables']
 
     def get_workflow_xml(self, workflow_name) -> bytes:
-        workflow_path = f'{self.project_folder}/{workflow_name}'
+        workflow_path = f'{self.project_path}/{workflow_name}'
         root = Element('workflow_configuration')
         try:
             workflow = ElementTree.parse(workflow_path)
@@ -117,7 +123,7 @@ class XMLBuilder:
 
 
     def get_pipeline_xml(self, pipeline_name, pipeline_config) -> bytes:
-        pipeline_path = f'{self.project_folder}/{pipeline_name}'
+        pipeline_path = f'{self.project_path}/{pipeline_name}'
         root = Element('pipeline_configuration')
         try:
             pipeline = ElementTree.parse(pipeline_path)
@@ -210,7 +216,8 @@ class XMLBuilder:
 
         project_home = Element('variable')
         project_home.append(self.__generate_element('name','PROJECT_HOME'))
-        project_home.append(self.__generate_element('value',self.project_home))
+        project_home.append(self.__generate_element('value',self.project_path))
+        root.append(project_home)
 
         jdk_debug = Element('variable')
         jdk_debug.append(self.__generate_element('name','jdk.debug'))
