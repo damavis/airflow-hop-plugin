@@ -53,7 +53,7 @@ class XMLBuilder:
         self.project_variables = project_data['config']['variables']
 
         if task_params is None:
-            self.task_params = []
+            self.task_params = {}
         else:
             self.task_params = task_params
 
